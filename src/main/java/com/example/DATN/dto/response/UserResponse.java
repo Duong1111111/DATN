@@ -1,0 +1,21 @@
+package com.example.DATN.dto.response;
+
+import com.example.DATN.utils.enums.options.AccountStatus;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+public class UserResponse {
+    private Integer accountId;
+    private String username;
+    private String email;
+    private AccountStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    // User-specific fields
+    private String hobby;
+}

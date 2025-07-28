@@ -1,0 +1,41 @@
+package com.example.DATN.controller;
+
+import com.example.DATN.dto.request.LocationRequest;
+import com.example.DATN.dto.response.LocationResponse;
+import com.example.DATN.service.interfaces.LocationService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/locations")
+public class LocationController {
+    private final LocationService locationService;
+
+    public LocationController(LocationService locationService) {
+        this.locationService = locationService;
+    }
+
+    @GetMapping
+    public List<LocationResponse> getAllLocations() {
+        return locationService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public LocationResponse getLocationById(@PathVariable Integer id) {
+        return locationService.getById(id);
+    }
+
+    @PostMapping
+    public LocationResponse createLocation(@RequestBody LocationRequest request) {
+        return locationService.create(request);
+    }
+    @PutMapping("/{id}")
+    public LocationResponse updateLocation(@PathVariable Integer id,@RequestBody LocationRequest request){
+        return locationService.update(id, request);
+    }
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id){
+        locationService.delete(id);
+    }
+}

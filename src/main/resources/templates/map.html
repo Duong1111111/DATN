@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thêm và Tìm địa điểm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 500px; margin-top: 10px; }
+    #searchBox, #info { width: 300px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<h2>Thêm và Tìm địa điểm trên bản đồ</h2>
+
+<input type="text" id="searchBox" placeholder="Tìm theo tên..." />
+<div id="info"></div>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  let map = L.map("map").setView([16.047079, 108.20623], 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+  }).addTo(map);
+
+  let locations = [];
+
+  let currentMarkers = [];
+
+  function updateMarkers(filtered) {
+    currentMarkers.forEach(m => map.removeLayer(m));
+    currentMarkers = [];
+
+    filtered.forEach(loc => {
+      let marker = L.marker([loc.lat, loc.lng])
+        .addTo(map)
+        .bindPopup(loc.name);
+      currentMarkers.push(marker);
+    });
+
+    if (filtered.length > 0) {
+      map.setView([filtered[0].lat, filtered[0].lng], 15);
+    }
+  }
+
+  document.getElementById("searchBox").addEventListener("input", (e) => {
+    const keyword = e.target.value.trim().toLowerCase();
+    const filtered = locations.filter(loc => loc.name.toLowerCase().includes(keyword));
+    updateMarkers(filtered);
+  });
+
+  map.on("click", (e) => {
+    const { lat, lng } = e.latlng;
+    const name = prompt("Nhập tên địa điểm:");
+    if (!name) return;
+
+    const newLoc = { name, lat, lng };
+    locations.push(newLoc);
+    updateMarkers([newLoc]);
+
+    document.getElementById("info").innerHTML = `
+      <b>Đã thêm:</b> ${name} (${lat.toFixed(4)}, ${lng.toFixed(4)})
+    `;
+
+    // ✅ Gửi request POST đến Spring Boot API
+    fetch("http://localhost:8080/api/locations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        description: "Được thêm từ bản đồ",
+        location: `${lat.toFixed(6)},${lng.toFixed(6)}`,
+        createdBy: 1,       // ⚠️ Tùy theo ID user hiện có
+        categoryId: 1       // ⚠️ Tùy theo ID category hiện có
+      })
+    })
+    .then(res => res.ok ? res.json() : Promise.reject("Lỗi tạo địa điểm"))
+    .then(data => {
+      alert("✅ Địa điểm đã thêm vào hệ thống!");
+    })
+    .catch(err => alert("❌ Lỗi: " + err));
+  });
+
+  // Khởi tạo nếu bạn muốn lấy sẵn từ backend (tuỳ chọn)
+  function fetchLocations() {
+    fetch("http://localhost:8080/api/locations")
+      .then(res => res.json())
+      .then(data => {
+        locations = data.map(l => {
+          const [lat, lng] = l.location.split(',').map(Number);
+          return { name: l.name, lat, lng };
+        });
+        updateMarkers(locations);
+      });
+  }
+
+  fetchLocations(); // Load từ DB
+
+</script>
+</body>
+</html>
