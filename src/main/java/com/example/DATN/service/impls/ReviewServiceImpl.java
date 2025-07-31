@@ -90,6 +90,14 @@ public class ReviewServiceImpl implements ReviewService {
 
         return toResponse(reviewRepository.save(review));
     }
+    @Override
+    public List<ReviewResponse> getPendingReviews() {
+        return reviewRepository.findAllByStatus(AccountStatus.PENDING)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public ReviewResponse update(Integer reviewId, ReviewRequest request) {

@@ -11,6 +11,8 @@ public interface AdService {
 
     AdResponse approveAd(Integer adId);
 
+    List<AdResponse> getPendingAds();
+
     AdResponse update(Integer id, AdRequest request);
     void delete(Integer id);
 

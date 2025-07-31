@@ -40,6 +40,10 @@ public class LocationController {
         LocationResponse response = locationService.activateLocation(id);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/pending")
+    public ResponseEntity<List<LocationResponse>> getPendingLocations() {
+        return ResponseEntity.ok(locationService.getPendingLocations());
+    }
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         locationService.delete(id);

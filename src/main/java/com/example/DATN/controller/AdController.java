@@ -40,6 +40,10 @@ public class AdController {
     public AdResponse update(@PathVariable Integer id, @RequestBody AdRequest request) {
         return adService.update(id, request);
     }
+    @GetMapping("/pending")
+    public ResponseEntity<List<AdResponse>> getPendingAds() {
+        return ResponseEntity.ok(adService.getPendingAds());
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {

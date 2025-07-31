@@ -37,6 +37,10 @@ public class ReviewController {
     public ResponseEntity<ReviewResponse> approve(@PathVariable Integer id) {
         return ResponseEntity.ok(reviewService.approveReview(id));
     }
+    @GetMapping("/pending")
+    public ResponseEntity<List<ReviewResponse>> getPendingReviews() {
+        return ResponseEntity.ok(reviewService.getPendingReviews());
+    }
 
     @PutMapping("/{id}")
     public ReviewResponse updateReview(@PathVariable Integer id, @RequestBody ReviewRequest request) {

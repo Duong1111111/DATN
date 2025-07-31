@@ -60,6 +60,13 @@ public class LocationServiceImpl implements LocationService {
         location.setUpdatedAt(LocalDateTime.now());
         return toResponse(locationRepository.save(location));
     }
+    @Override
+    public List<LocationResponse> getPendingLocations() {
+        return locationRepository.findAllByStatus(AccountStatus.PENDING)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public LocationResponse update(Integer id, LocationRequest request) {

@@ -55,6 +55,13 @@ public class AdServiceImpl implements AdService {
 
         return toResponse(adRepo.save(ad));
     }
+    @Override
+    public List<AdResponse> getPendingAds() {
+        return adRepo.findAllByStatus(AccountStatus.PENDING)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public AdResponse update(Integer id, AdRequest request) {
