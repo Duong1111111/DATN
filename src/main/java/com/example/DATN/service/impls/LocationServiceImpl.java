@@ -7,6 +7,7 @@ import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.CategoryRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.service.interfaces.LocationService;
+import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,11 +39,25 @@ public class LocationServiceImpl implements LocationService {
         location.setOpenTime(request.getOpenTime());
         location.setCloseTime(request.getCloseTime());
         location.setImage(request.getImage());
-        location.setStatus(request.getStatus()!= null ? request.getStatus() : true);
+        location.setStatus(AccountStatus.PENDING);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
         location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
         location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
+        return toResponse(locationRepository.save(location));
+    }
+
+    @Override
+    public LocationResponse activateLocation(Integer locationId) {
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new RuntimeException("Location not found"));
+
+        if (location.getStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException("Only pending locations can be activated.");
+        }
+
+        location.setStatus(AccountStatus.ACTIVE);
+        location.setUpdatedAt(LocalDateTime.now());
         return toResponse(locationRepository.save(location));
     }
 

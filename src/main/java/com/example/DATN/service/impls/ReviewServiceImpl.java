@@ -9,6 +9,7 @@ import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.repository.ReviewRepository;
 import com.example.DATN.service.interfaces.ReviewService;
+import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,7 +58,7 @@ public class ReviewServiceImpl implements ReviewService {
         r.setLocation(location);
         r.setRating(request.getRating());
         r.setComment(request.getComment());
-        r.setStatus(request.getStatus()!= null ? request.getStatus() : true);
+        r.setStatus(AccountStatus.PENDING);
         r.setCreatedAt(LocalDateTime.now());
         r.setUpdatedAt(LocalDateTime.now());
 
@@ -75,6 +76,21 @@ public class ReviewServiceImpl implements ReviewService {
 
         return res;
     }
+    @Override
+    public ReviewResponse approveReview(Integer reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (review.getStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING reviews can be approved.");
+        }
+
+        review.setStatus(AccountStatus.ACTIVE);
+        review.setUpdatedAt(LocalDateTime.now());
+
+        return toResponse(reviewRepository.save(review));
+    }
+
     @Override
     public ReviewResponse update(Integer reviewId, ReviewRequest request) {
         Review r = reviewRepository.findById(reviewId)
@@ -136,5 +152,19 @@ public class ReviewServiceImpl implements ReviewService {
 
         return res;
     }
+
+    private ReviewResponse toResponse(Review review) {
+        ReviewResponse res = new ReviewResponse();
+        res.setReviewId(review.getReviewId());
+        res.setRating(review.getRating());
+        res.setComment(review.getComment());
+        res.setStatus(review.getStatus());
+        res.setUserId(review.getUser().getUserId());
+        res.setLocationId(review.getLocation().getLocationId());
+        res.setCreatedAt(review.getCreatedAt());
+        res.setUpdatedAt(review.getUpdatedAt());
+        return res;
+    }
+
 
 }

@@ -9,6 +9,8 @@ public interface ReviewService {
     List<ReviewResponse> getAll();
     ReviewResponse create(ReviewRequest request);
 
+    ReviewResponse approveReview(Integer reviewId);
+
     ReviewResponse update(Integer reviewId, ReviewRequest request);
 
     void delete(Integer reviewId);

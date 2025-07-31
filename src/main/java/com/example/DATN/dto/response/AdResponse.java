@@ -1,5 +1,6 @@
 package com.example.DATN.dto.response;
 
+import com.example.DATN.utils.enums.options.AccountStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ public class AdResponse {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Double budget;
-    private Boolean status;
+    private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdByUsername;

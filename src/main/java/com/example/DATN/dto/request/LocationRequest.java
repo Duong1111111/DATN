@@ -1,5 +1,6 @@
 package com.example.DATN.dto.request;
 
+import com.example.DATN.utils.enums.options.AccountStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +19,7 @@ public class LocationRequest {
     private LocalTime openTime;
     private LocalTime closeTime;
     private String image;
-    private Boolean status;
+    private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

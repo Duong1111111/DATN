@@ -8,6 +8,9 @@ import java.util.List;
 public interface AdService {
     List<AdResponse> getAll();
     AdResponse create(AdRequest request);
+
+    AdResponse approveAd(Integer adId);
+
     AdResponse update(Integer id, AdRequest request);
     void delete(Integer id);
 

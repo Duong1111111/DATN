@@ -1,5 +1,6 @@
 package com.example.DATN.entity;
 
+import com.example.DATN.utils.enums.options.AccountStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,8 @@ public class Location {
     private LocalTime openTime;
     private LocalTime closeTime;
     private String image;
-    private Boolean status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -3,6 +3,7 @@ package com.example.DATN.controller;
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
 import com.example.DATN.service.interfaces.LocationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,11 @@ public class LocationController {
     @PutMapping("/{id}")
     public LocationResponse updateLocation(@PathVariable Integer id,@RequestBody LocationRequest request){
         return locationService.update(id, request);
+    }
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<LocationResponse> activateLocation(@PathVariable Integer id) {
+        LocationResponse response = locationService.activateLocation(id);
+        return ResponseEntity.ok(response);
     }
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){

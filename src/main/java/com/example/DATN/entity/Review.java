@@ -1,5 +1,6 @@
 package com.example.DATN.entity;
 
+import com.example.DATN.utils.enums.options.AccountStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,8 @@ public class Review {
 
     private Integer rating;
     private String comment;
-    private Boolean status;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

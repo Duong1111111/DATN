@@ -7,6 +7,7 @@ import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.AdRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.service.interfaces.AdService;
+import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +33,26 @@ public class AdServiceImpl implements AdService {
         ad.setStartDate(request.getStartDate());
         ad.setEndDate(request.getEndDate());
         ad.setBudget(request.getBudget());
-        ad.setStatus(request.getStatus()!= null ? request.getStatus() : true);
+        ad.setStatus(AccountStatus.PENDING);
         ad.setCreatedAt(LocalDateTime.now());
         ad.setUpdatedAt(LocalDateTime.now());
         ad.setCreatedBy(accountRepo.findById(request.getCreatedById()).orElseThrow());
         ad.setLocation(locationRepo.findById(request.getLocationId()).orElseThrow());
+        return toResponse(adRepo.save(ad));
+    }
+
+    @Override
+    public AdResponse approveAd(Integer adId) {
+        Ad ad = adRepo.findById(adId)
+                .orElseThrow(() -> new RuntimeException("Ad not found"));
+
+        if (ad.getStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING ads can be approved.");
+        }
+
+        ad.setStatus(AccountStatus.ACTIVE);
+        ad.setUpdatedAt(LocalDateTime.now());
+
         return toResponse(adRepo.save(ad));
     }
 

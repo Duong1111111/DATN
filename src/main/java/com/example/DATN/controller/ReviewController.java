@@ -33,6 +33,11 @@ public class ReviewController {
         return reviewService.create(request);
     }
 
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<ReviewResponse> approve(@PathVariable Integer id) {
+        return ResponseEntity.ok(reviewService.approveReview(id));
+    }
+
     @PutMapping("/{id}")
     public ReviewResponse updateReview(@PathVariable Integer id, @RequestBody ReviewRequest request) {
         return reviewService.update(id, request);

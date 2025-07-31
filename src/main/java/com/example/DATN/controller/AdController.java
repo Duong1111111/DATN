@@ -3,6 +3,7 @@ package com.example.DATN.controller;
 import com.example.DATN.dto.request.AdRequest;
 import com.example.DATN.dto.response.AdResponse;
 import com.example.DATN.service.interfaces.AdService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,11 @@ public class AdController {
     @PostMapping
     public AdResponse create(@RequestBody AdRequest request) {
         return adService.create(request);
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<AdResponse> approve(@PathVariable Integer id) {
+        return ResponseEntity.ok(adService.approveAd(id));
     }
 
     @PutMapping("/{id}")
