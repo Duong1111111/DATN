@@ -36,8 +36,8 @@ public class ReviewServiceImpl implements ReviewService {
             res.setRating(r.getRating());
             res.setComment(r.getComment());
             res.setStatus(r.getStatus());
-            res.setUserId(r.getUser().getUserId());
-            res.setLocationId(r.getLocation().getLocationId());
+            res.setUsername(r.getUser().getUsername());
+            res.setLocationName(r.getLocation().getName());
             res.setCreatedAt(r.getCreatedAt());
             res.setUpdatedAt(r.getUpdatedAt());
             return res;
@@ -69,8 +69,8 @@ public class ReviewServiceImpl implements ReviewService {
         res.setRating(r.getRating());
         res.setComment(r.getComment());
         res.setStatus(r.getStatus());
-        res.setUserId(r.getUser().getUserId());
-        res.setLocationId(r.getLocation().getLocationId());
+        res.setUsername(r.getUser().getUsername());
+        res.setLocationName(r.getLocation().getName());
         res.setCreatedAt(r.getCreatedAt());
         res.setUpdatedAt(r.getUpdatedAt());
 
@@ -143,8 +143,8 @@ public class ReviewServiceImpl implements ReviewService {
         res.setRating(r.getRating());
         res.setComment(r.getComment());
         res.setStatus(r.getStatus());
-        res.setUserId(r.getUser().getUserId());
-        res.setLocationId(r.getLocation().getLocationId());
+        res.setUsername(r.getUser().getUsername());
+        res.setLocationName(r.getLocation().getName());
         res.setCreatedAt(r.getCreatedAt());
         res.setUpdatedAt(r.getUpdatedAt());
 
@@ -168,8 +168,8 @@ public class ReviewServiceImpl implements ReviewService {
         res.setRating(r.getRating());
         res.setComment(r.getComment());
         res.setStatus(r.getStatus());
-        res.setUserId(r.getUser().getUserId());
-        res.setLocationId(r.getLocation().getLocationId());
+        res.setUsername(r.getUser().getUsername());
+        res.setLocationName(r.getLocation().getName());
         res.setCreatedAt(r.getCreatedAt());
         res.setUpdatedAt(r.getUpdatedAt());
 
@@ -182,8 +182,8 @@ public class ReviewServiceImpl implements ReviewService {
         res.setRating(review.getRating());
         res.setComment(review.getComment());
         res.setStatus(review.getStatus());
-        res.setUserId(review.getUser().getUserId());
-        res.setLocationId(review.getLocation().getLocationId());
+        res.setUsername(review.getUser().getUsername());
+        res.setLocationName(review.getLocation().getName());
         res.setCreatedAt(review.getCreatedAt());
         res.setUpdatedAt(review.getUpdatedAt());
         return res;

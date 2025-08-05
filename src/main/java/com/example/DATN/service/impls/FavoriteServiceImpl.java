@@ -32,8 +32,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         return favoriteRepository.findAll().stream().map(fav -> {
             FavoriteResponse res = new FavoriteResponse();
             res.setFavorId(fav.getFavorId());
-            res.setUserId(fav.getUser().getUserId());
-            res.setLocationId(fav.getLocation().getLocationId());
+            res.setUsername(fav.getUser().getUsername());
+            res.setLocationName(fav.getLocation().getName());
             res.setStatus(fav.getStatus());
             res.setCreatedAt(fav.getCreatedAt());
             res.setUpdatedAt(fav.getUpdatedAt());
@@ -61,8 +61,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         FavoriteResponse res = new FavoriteResponse();
         res.setFavorId(fav.getFavorId());
-        res.setUserId(user.getUserId());
-        res.setLocationId(location.getLocationId());
+        res.setUsername(user.getUsername());
+        res.setLocationName(location.getName());
         res.setStatus(fav.getStatus());
         res.setCreatedAt(fav.getCreatedAt());
         res.setUpdatedAt(fav.getUpdatedAt());
@@ -95,8 +95,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         FavoriteResponse res = new FavoriteResponse();
         res.setFavorId(fav.getFavorId());
-        res.setUserId(fav.getUser().getUserId());
-        res.setLocationId(fav.getLocation().getLocationId());
+        res.setUsername(fav.getUser().getUsername());
+        res.setLocationName(fav.getLocation().getName());
         res.setStatus(fav.getStatus());
         res.setCreatedAt(fav.getCreatedAt());
         res.setUpdatedAt(fav.getUpdatedAt());
@@ -117,8 +117,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         FavoriteResponse res = new FavoriteResponse();
         res.setFavorId(fav.getFavorId());
-        res.setUserId(fav.getUser().getUserId());
-        res.setLocationId(fav.getLocation().getLocationId());
+        res.setUsername(fav.getUser().getUsername());
+        res.setLocationName(fav.getLocation().getName());
         res.setStatus(fav.getStatus());
         res.setCreatedAt(fav.getCreatedAt());
         res.setUpdatedAt(fav.getUpdatedAt());

@@ -12,8 +12,8 @@ public class ReviewResponse {
     private Integer rating;
     private String comment;
     private AccountStatus status;
-    private Integer userId;
-    private Integer locationId;
+    private String username;         // ✅ Tên người dùng
+    private String locationName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

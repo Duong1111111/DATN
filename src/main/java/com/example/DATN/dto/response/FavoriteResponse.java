@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Setter
 public class FavoriteResponse {
     private Integer favorId;
-    private Integer userId;
-    private Integer locationId;
+    private String username;
+    private String locationName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean status;
