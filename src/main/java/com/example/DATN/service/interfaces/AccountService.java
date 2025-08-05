@@ -3,6 +3,7 @@ package com.example.DATN.service.interfaces;
 import com.example.DATN.dto.request.*;
 import com.example.DATN.dto.response.AccountResponse;
 import com.example.DATN.dto.response.CompanyResponse;
+import com.example.DATN.dto.response.PendingAccountDetailResponse;
 import com.example.DATN.dto.response.UserResponse;
 import com.example.DATN.utils.enums.options.AccountStatus;
 
@@ -26,6 +27,8 @@ public interface AccountService {
     CompanyResponse updateCompanyInfo(Integer accountId, CompanyUpdateRequest request);
 
     List<AccountResponse> getPendingAccounts();
+
+    PendingAccountDetailResponse getPendingAccountDetail(Integer userId);
 
     AccountResponse updateAccountStatus(Integer accountId, AccountStatus newStatus);
 

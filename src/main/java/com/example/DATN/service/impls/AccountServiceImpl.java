@@ -3,19 +3,24 @@ package com.example.DATN.service.impls;
 import com.example.DATN.dto.request.*;
 import com.example.DATN.dto.response.AccountResponse;
 import com.example.DATN.dto.response.CompanyResponse;
+import com.example.DATN.dto.response.PendingAccountDetailResponse;
 import com.example.DATN.dto.response.UserResponse;
 import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Company;
 import com.example.DATN.entity.User;
+import com.example.DATN.exception.BusinessException;
 import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.service.interfaces.AccountService;
+import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.options.Role;
+import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,10 +30,13 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TimeAgoUtil timeAgoUtil;
 
-    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
+
+    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
+        this.timeAgoUtil = timeAgoUtil;
     }
 
     @Override
@@ -178,6 +186,27 @@ public class AccountServiceImpl implements AccountService {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+    @Override
+    public PendingAccountDetailResponse getPendingAccountDetail(Integer userId) {
+        Account account = accountRepository.findByUserIdAndStatus(userId, AccountStatus.PENDING)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        PendingAccountDetailResponse response = new PendingAccountDetailResponse();
+        response.setUserId(account.getUserId());
+        response.setUsername(account.getUsername());
+        response.setEmail(account.getEmail());
+        response.setStatus(account.getStatus());
+        response.setRole(account.getRole().name());
+        response.setCreatedAt(account.getCreatedAt());
+
+
+        if (account.getCompany() != null) {
+            response.setCompanyName(account.getCompany().getCompanyName());
+            response.setTaxCode(account.getCompany().getTaxCode());
+        }
+        return response;
+    }
+
 
     @Override
     public AccountResponse updateAccountStatus(Integer accountId, AccountStatus newStatus) {

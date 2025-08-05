@@ -3,6 +3,7 @@ package com.example.DATN.controller;
 import com.example.DATN.dto.request.*;
 import com.example.DATN.dto.response.AccountResponse;
 import com.example.DATN.dto.response.CompanyResponse;
+import com.example.DATN.dto.response.PendingAccountDetailResponse;
 import com.example.DATN.dto.response.UserResponse;
 import com.example.DATN.service.interfaces.AccountService;
 import com.example.DATN.utils.enums.options.AccountStatus;
@@ -70,8 +71,13 @@ public class AccountController {
         return accountService.getPendingAccounts();
     }
 
+    @GetMapping("/pending/{userId}")
+    public ResponseEntity<PendingAccountDetailResponse> getPendingAccountDetail(@PathVariable Integer userId) {
+        return ResponseEntity.ok(accountService.getPendingAccountDetail(userId));
+    }
+
     // --- Duyệt hoặc từ chối tài khoản công ty
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public AccountResponse updateAccountStatus(@PathVariable Integer id, @RequestParam AccountStatus status) {
         return accountService.updateAccountStatus(id, status);
     }
