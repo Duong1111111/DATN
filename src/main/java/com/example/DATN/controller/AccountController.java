@@ -7,6 +7,8 @@ import com.example.DATN.dto.response.PendingAccountDetailResponse;
 import com.example.DATN.dto.response.UserResponse;
 import com.example.DATN.service.interfaces.AccountService;
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.example.DATN.utils.enums.responsecode.BaseResponse;
+import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,9 +79,16 @@ public class AccountController {
     }
 
     // --- Duyệt hoặc từ chối tài khoản công ty
-    @PutMapping("/{id}/status")
-    public AccountResponse updateAccountStatus(@PathVariable Integer id, @RequestParam AccountStatus status) {
-        return accountService.updateAccountStatus(id, status);
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<BaseResponse<AccountResponse>> approveCompanyAccount(@PathVariable Integer id) {
+        AccountResponse response = accountService.approveCompanyAccount(id);
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, response));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<BaseResponse<AccountResponse>> rejectCompanyAccount(@PathVariable Integer id) {
+        AccountResponse response = accountService.rejectCompanyAccount(id);
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, response));
     }
     @GetMapping("/me/user")
     public ResponseEntity<UserResponse> getCurrentUser() {

@@ -91,6 +91,21 @@ public class ReviewServiceImpl implements ReviewService {
         return toResponse(reviewRepository.save(review));
     }
     @Override
+    public ReviewResponse rejectReview(Integer reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (review.getStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING reviews can be rejected.");
+        }
+
+        review.setStatus(AccountStatus.INACTIVE);
+        review.setUpdatedAt(LocalDateTime.now());
+
+        return toResponse(reviewRepository.save(review));
+    }
+
+    @Override
     public List<ReviewResponse> getPendingReviews() {
         return reviewRepository.findAllByStatus(AccountStatus.PENDING)
                 .stream()

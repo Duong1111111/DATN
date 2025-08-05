@@ -56,6 +56,21 @@ public class AdServiceImpl implements AdService {
         return toResponse(adRepo.save(ad));
     }
     @Override
+    public AdResponse rejectAd(Integer adId) {
+        Ad ad = adRepo.findById(adId)
+                .orElseThrow(() -> new RuntimeException("Ad not found"));
+
+        if (ad.getStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING ads can be rejected.");
+        }
+
+        ad.setStatus(AccountStatus.INACTIVE);
+        ad.setUpdatedAt(LocalDateTime.now());
+
+        return toResponse(adRepo.save(ad));
+    }
+
+    @Override
     public List<AdResponse> getPendingAds() {
         return adRepo.findAllByStatus(AccountStatus.PENDING)
                 .stream()

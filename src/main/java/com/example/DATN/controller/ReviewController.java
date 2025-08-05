@@ -3,6 +3,8 @@ package com.example.DATN.controller;
 import com.example.DATN.dto.request.ReviewRequest;
 import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.service.interfaces.ReviewService;
+import com.example.DATN.utils.enums.responsecode.BaseResponse;
+import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +38,11 @@ public class ReviewController {
     @PutMapping("/{id}/approve")
     public ResponseEntity<ReviewResponse> approve(@PathVariable Integer id) {
         return ResponseEntity.ok(reviewService.approveReview(id));
+    }
+    @PutMapping("/{reviewId}/reject")
+    public ResponseEntity<BaseResponse<ReviewResponse>> rejectReview(@PathVariable Integer reviewId) {
+        ReviewResponse response = reviewService.rejectReview(reviewId);
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, response));
     }
     @GetMapping("/pending")
     public ResponseEntity<List<ReviewResponse>> getPendingReviews() {

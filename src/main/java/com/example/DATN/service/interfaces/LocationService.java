@@ -11,6 +11,8 @@ public interface LocationService {
 
     LocationResponse activateLocation(Integer locationId);
 
+    LocationResponse rejectLocation(Integer locationId);
+
     List<LocationResponse> getPendingLocations();
 
     LocationResponse update(Integer id, LocationRequest request);

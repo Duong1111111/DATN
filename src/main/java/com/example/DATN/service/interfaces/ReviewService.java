@@ -11,6 +11,8 @@ public interface ReviewService {
 
     ReviewResponse approveReview(Integer reviewId);
 
+    ReviewResponse rejectReview(Integer reviewId);
+
     List<ReviewResponse> getPendingReviews();
 
     ReviewResponse update(Integer reviewId, ReviewRequest request);

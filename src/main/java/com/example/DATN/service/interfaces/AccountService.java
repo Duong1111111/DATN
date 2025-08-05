@@ -30,7 +30,9 @@ public interface AccountService {
 
     PendingAccountDetailResponse getPendingAccountDetail(Integer userId);
 
-    AccountResponse updateAccountStatus(Integer accountId, AccountStatus newStatus);
+    AccountResponse approveCompanyAccount(Integer accountId);
+
+    AccountResponse rejectCompanyAccount(Integer accountId);
 
     UserResponse getCurrentUser();
 

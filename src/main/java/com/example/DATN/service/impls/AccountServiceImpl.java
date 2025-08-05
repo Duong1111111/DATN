@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -209,20 +208,37 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public AccountResponse updateAccountStatus(Integer accountId, AccountStatus newStatus) {
+    public AccountResponse approveCompanyAccount(Integer accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         if (account.getRole() == Role.COMPANY && account.getStatus() == AccountStatus.PENDING) {
-            account.setStatus(newStatus);
+            account.setStatus(AccountStatus.ACTIVE);
             account.setUpdatedAt(LocalDateTime.now());
             accountRepository.save(account);
         } else {
-            throw new RuntimeException("Only pending company accounts can be updated");
+            throw new RuntimeException("Only pending company accounts can be approved");
         }
 
         return toResponse(account);
     }
+
+    @Override
+    public AccountResponse rejectCompanyAccount(Integer accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if (account.getRole() == Role.COMPANY && account.getStatus() == AccountStatus.PENDING) {
+            account.setStatus(AccountStatus.INACTIVE);
+            account.setUpdatedAt(LocalDateTime.now());
+            accountRepository.save(account);
+        } else {
+            throw new RuntimeException("Only pending company accounts can be rejected");
+        }
+
+        return toResponse(account);
+    }
+
     @Override
     public UserResponse getCurrentUser() {
         String username = getCurrentUsername();

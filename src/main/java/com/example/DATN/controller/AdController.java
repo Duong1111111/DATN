@@ -3,6 +3,8 @@ package com.example.DATN.controller;
 import com.example.DATN.dto.request.AdRequest;
 import com.example.DATN.dto.response.AdResponse;
 import com.example.DATN.service.interfaces.AdService;
+import com.example.DATN.utils.enums.responsecode.BaseResponse;
+import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +37,14 @@ public class AdController {
     public ResponseEntity<AdResponse> approve(@PathVariable Integer id) {
         return ResponseEntity.ok(adService.approveAd(id));
     }
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<BaseResponse<AdResponse>> rejectAd(
+            @PathVariable Integer id
+    ) {
+        AdResponse response = adService.rejectAd(id);
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, response));
+    }
+
 
     @PutMapping("/{id}")
     public AdResponse update(@PathVariable Integer id, @RequestBody AdRequest request) {

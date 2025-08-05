@@ -61,6 +61,21 @@ public class LocationServiceImpl implements LocationService {
         return toResponse(locationRepository.save(location));
     }
     @Override
+    public LocationResponse rejectLocation(Integer locationId) {
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new RuntimeException("Location not found"));
+
+        if (location.getStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException("Only pending locations can be rejected.");
+        }
+
+        location.setStatus(AccountStatus.INACTIVE);
+        location.setUpdatedAt(LocalDateTime.now());
+
+        return toResponse(locationRepository.save(location));
+    }
+
+    @Override
     public List<LocationResponse> getPendingLocations() {
         return locationRepository.findAllByStatus(AccountStatus.PENDING)
                 .stream()
