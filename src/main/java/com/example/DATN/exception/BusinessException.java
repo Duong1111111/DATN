@@ -1,7 +1,9 @@
 package com.example.DATN.exception;
 
 import com.example.DATN.utils.enums.responsecode.ResponseCode;
+import lombok.Getter;
 
+@Getter
 public class BusinessException extends RuntimeException {
   private final ResponseCode errorCode;
 
@@ -10,7 +12,4 @@ public class BusinessException extends RuntimeException {
     this.errorCode = errorCode;
   }
 
-  public ResponseCode getErrorCode() {
-    return errorCode;
-  }
 }

@@ -33,6 +33,10 @@ public class LocationController {
     public LocationResponse createLocation(@RequestBody LocationRequest request) {
         return locationService.create(request);
     }
+    @PostMapping("/staff")
+    public LocationResponse createLocationbyStaff(@RequestBody LocationRequest request) {
+        return locationService.createbyStaff(request);
+    }
     @PutMapping("/{id}")
     public LocationResponse updateLocation(@PathVariable Integer id,@RequestBody LocationRequest request){
         return locationService.update(id, request);

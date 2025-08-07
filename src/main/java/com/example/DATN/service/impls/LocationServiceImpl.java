@@ -48,6 +48,24 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public LocationResponse createbyStaff(LocationRequest request) {
+        Location location = new Location();
+        location.setName(request.getName());
+        location.setDescription(request.getDescription());
+        location.setLocation(request.getLocation());
+        location.setPrice(request.getPrice());
+        location.setOpenTime(request.getOpenTime());
+        location.setCloseTime(request.getCloseTime());
+        location.setImage(request.getImage());
+        location.setStatus(AccountStatus.ACTIVE);
+        location.setCreatedAt(LocalDateTime.now());
+        location.setUpdatedAt(LocalDateTime.now());
+        location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
+        location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
+        return toResponse(locationRepository.save(location));
+    }
+
+    @Override
     public LocationResponse activateLocation(Integer locationId) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new RuntimeException("Location not found"));

@@ -9,6 +9,8 @@ public interface LocationService {
     List<LocationResponse> getAll();
     LocationResponse create(LocationRequest request);
 
+    LocationResponse createbyStaff(LocationRequest request);
+
     LocationResponse activateLocation(Integer locationId);
 
     LocationResponse rejectLocation(Integer locationId);

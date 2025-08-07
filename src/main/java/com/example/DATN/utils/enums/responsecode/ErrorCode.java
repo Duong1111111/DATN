@@ -2,6 +2,11 @@ package com.example.DATN.utils.enums.responsecode;
 
 public enum ErrorCode implements ResponseCode{
     USER_NOT_FOUND(1001, "Không tìm thấy người dùng"),
+    USERNAME_ALREADY_EXISTS(1002, "Username already exists"),
+    ACCOUNT_NOT_FOUND(1003,"Account not found"),
+    ACCOUNT_NOT_USER(1004,"Account is not a user"),
+    ACCOUNT_NOT_COMPANY(1005,"Account is not a company"),
+    ONLY_PENDING_COMPANY(1006,"Only pending company accounts can be approved"),
     INVALID_TOKEN(2001, "Token không hợp lệ"),
     EXPIRED_TOKEN(2002, "Hết phiên đăng nhập");
 

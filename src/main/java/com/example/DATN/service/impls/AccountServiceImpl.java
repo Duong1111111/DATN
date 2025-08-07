@@ -29,13 +29,11 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TimeAgoUtil timeAgoUtil;
 
 
     public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
-        this.timeAgoUtil = timeAgoUtil;
     }
 
     @Override
@@ -48,6 +46,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse createAccount(AccountRequest request) {
+        if (accountRepository.existsByUsername(request.getUsername())) {
+            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
         Account account = toEntity(request);
         account.setRole(request.getRole() != null ? request.getRole() : Role.STAFF);
         account.setCreatedAt(LocalDateTime.now());
@@ -58,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResponse updateAccount(Integer id, AccountRequest request) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (request.getUsername() != null) {
             account.setUsername(request.getUsername());
@@ -91,7 +92,7 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setEmail(request.getEmail());
         account.setRole(Role.USER);
-        account.setStatus(AccountStatus.ACTIVE); // Mặc định là hoạt động
+        account.setStatus(AccountStatus.ACTIVE);
         account.setCreatedAt(LocalDateTime.now());
         account.setUpdatedAt(LocalDateTime.now());
 
@@ -111,7 +112,7 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setEmail(request.getEmail());
         account.setRole(Role.COMPANY);
-        account.setStatus(AccountStatus.PENDING); // Chờ admin duyệt
+        account.setStatus(AccountStatus.PENDING);
         account.setCreatedAt(LocalDateTime.now());
         account.setUpdatedAt(LocalDateTime.now());
 
@@ -127,10 +128,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public UserResponse updateUserInfo(Integer accountId, UserUpdateRequest request) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (account.getRole() != Role.USER || account.getUser() == null) {
-            throw new RuntimeException("Account is not a user");
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_USER);
         }
 
         if (request.getUsername() != null) {
@@ -151,10 +152,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public CompanyResponse updateCompanyInfo(Integer accountId, CompanyUpdateRequest request) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (account.getRole() != Role.COMPANY || account.getCompany() == null) {
-            throw new RuntimeException("Account is not a company");
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_COMPANY);
         }
 
         if (request.getUsername() != null) {
@@ -210,14 +211,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResponse approveCompanyAccount(Integer accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (account.getRole() == Role.COMPANY && account.getStatus() == AccountStatus.PENDING) {
             account.setStatus(AccountStatus.ACTIVE);
             account.setUpdatedAt(LocalDateTime.now());
             accountRepository.save(account);
         } else {
-            throw new RuntimeException("Only pending company accounts can be approved");
+            throw new BusinessException(ErrorCode.ONLY_PENDING_COMPANY);
         }
 
         return toResponse(account);
@@ -226,7 +227,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResponse rejectCompanyAccount(Integer accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (account.getRole() == Role.COMPANY && account.getStatus() == AccountStatus.PENDING) {
             account.setStatus(AccountStatus.INACTIVE);

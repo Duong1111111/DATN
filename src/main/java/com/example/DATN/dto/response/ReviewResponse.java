@@ -12,7 +12,7 @@ public class ReviewResponse {
     private Integer rating;
     private String comment;
     private AccountStatus status;
-    private String username;         // ✅ Tên người dùng
+    private String username;
     private String locationName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
