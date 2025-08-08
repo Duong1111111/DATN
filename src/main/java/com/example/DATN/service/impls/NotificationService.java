@@ -8,6 +8,9 @@ import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class NotificationService {
 
@@ -32,4 +35,13 @@ public class NotificationService {
                 account.getCreatedAt()
         );
     }
+
+    public List<String> getAllCompanyPendingNotifications() {
+        return accountRepository.findByStatus(AccountStatus.PENDING).stream()
+                .map(account -> timeAgoUtil.companyRegisteredAgo(
+                        account.getCompany().getCompanyName(),
+                        account.getCreatedAt()))
+                .collect(Collectors.toList());
+    }
+
 }

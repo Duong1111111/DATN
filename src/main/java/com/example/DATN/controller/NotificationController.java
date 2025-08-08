@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
@@ -24,5 +26,10 @@ public class NotificationController {
     public ResponseEntity<BaseResponse<String>> getCompanyPendingNotification(@PathVariable Integer userId) {
         String message = notificationService.getCompanyPendingNotification(userId);
         return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, message));
+    }
+    @GetMapping("/company-pending")
+    public ResponseEntity<BaseResponse<List<String>>> getAllCompanyPendingNotification(){
+        List<String> message = notificationService.getAllCompanyPendingNotifications();
+        return  ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, message));
     }
 }
