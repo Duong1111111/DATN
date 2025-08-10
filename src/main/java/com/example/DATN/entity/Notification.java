@@ -1,5 +1,6 @@
 package com.example.DATN.entity;
 
+import com.example.DATN.utils.enums.options.Type;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +15,8 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private String content;
     private LocalDateTime createdAt;
     private boolean readStatus = false;
