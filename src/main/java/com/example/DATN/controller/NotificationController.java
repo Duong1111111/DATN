@@ -1,14 +1,13 @@
 package com.example.DATN.controller;
 
+import com.example.DATN.dto.request.NotificationToRoleRequest;
+import com.example.DATN.dto.response.SendNotificationSummaryResponse;
 import com.example.DATN.service.impls.NotificationService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
 import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,4 +31,16 @@ public class NotificationController {
         List<String> message = notificationService.getAllCompanyPendingNotifications();
         return  ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, message));
     }
+    @PostMapping("/send-to-role")
+    public SendNotificationSummaryResponse sendNotificationToRole(
+            @RequestParam Integer adminId,
+            @RequestBody NotificationToRoleRequest request) {
+        return notificationService.sendNotificationToRole(adminId, request);
+    }
+    @PutMapping("/{id}/read")
+    public String markNotificationAsRead(@PathVariable Long id, @RequestParam Integer receiverId) {
+        notificationService.markAsRead(id, receiverId);
+        return "Notification marked as read";
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.DATN.repository;
 
 import com.example.DATN.entity.Account;
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.example.DATN.utils.enums.options.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Optional<Account> findByUserIdAndStatus(Integer userId, AccountStatus status);
     List<Account> findByStatus(AccountStatus status);
     boolean existsByUsername(String username);
+    List<Account> findByRole(Role role);
 }
