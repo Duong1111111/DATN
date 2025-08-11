@@ -1,5 +1,6 @@
 package com.example.DATN.entity;
 
+import com.example.DATN.utils.enums.options.Role;
 import com.example.DATN.utils.enums.options.Type;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,4 +34,6 @@ public class Notification {
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
+    @Enumerated(EnumType.STRING)
+    private Role targetRole;
 }

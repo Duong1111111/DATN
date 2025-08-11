@@ -29,11 +29,13 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TimeAgoUtil timeAgoUtil;
 
 
-    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil) {
+    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil, TimeAgoUtil timeAgoUtil1) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
+        this.timeAgoUtil = timeAgoUtil1;
     }
 
     @Override
@@ -102,6 +104,7 @@ public class AccountServiceImpl implements AccountService {
         account.setUser(user);
 
         Account savedAccount = accountRepository.save(account);
+        timeAgoUtil.notifyUserRegistered(savedAccount.getUser());
         return toUserResponse(savedAccount);
     }
 
@@ -119,10 +122,13 @@ public class AccountServiceImpl implements AccountService {
         Company company = new Company();
         company.setCompanyName(request.getCompanyName());
         company.setTaxCode(request.getTaxCode());
+        company.setLocation(request.getLocation());
+        company.setPhoneNumber(request.getPhoneNumber());
         company.setAccount(account);
         account.setCompany(company);
 
         Account savedAccount = accountRepository.save(account);
+        timeAgoUtil.notifyCompanyRegistered(savedAccount.getCompany());
         return toCompanyResponse(savedAccount);
     }
     @Override
@@ -173,6 +179,12 @@ public class AccountServiceImpl implements AccountService {
         if (request.getTaxCode() != null) {
             account.getCompany().setTaxCode(request.getTaxCode());
         }
+        if (request.getLocation() != null){
+            account.getCompany().setLocation(request.getLocation());
+        }
+        if (request.getPhoneNumber() != null){
+            account.getCompany().setPhoneNumber(request.getPhoneNumber());
+        }
         account.setUpdatedAt(LocalDateTime.now());
 
         return toCompanyResponse(accountRepository.save(account));
@@ -203,6 +215,8 @@ public class AccountServiceImpl implements AccountService {
         if (account.getCompany() != null) {
             response.setCompanyName(account.getCompany().getCompanyName());
             response.setTaxCode(account.getCompany().getTaxCode());
+            response.setLocation(account.getCompany().getLocation());
+            response.setPhoneNumber(account.getCompany().getPhoneNumber());
         }
         return response;
     }
@@ -333,6 +347,8 @@ public class AccountServiceImpl implements AccountService {
         if (account.getCompany() != null) {
             response.setCompanyName(account.getCompany().getCompanyName());
             response.setTaxCode(account.getCompany().getTaxCode());
+            response.setLocation(account.getCompany().getLocation());
+            response.setPhoneNumber(account.getCompany().getPhoneNumber());
         }
 
         return response;

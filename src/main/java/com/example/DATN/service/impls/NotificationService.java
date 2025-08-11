@@ -1,6 +1,7 @@
 package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.request.NotificationToRoleRequest;
+import com.example.DATN.dto.response.NotificationResponse;
 import com.example.DATN.dto.response.SendNotificationSummaryResponse;
 import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Notification;
@@ -14,6 +15,7 @@ import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,7 @@ public class NotificationService {
             n.setContent(request.getContent());
             n.setSender(admin);
             n.setReceiver(receiver);
+            n.setTargetRole(request.getTargetRole());
             return n;
         }).toList();
 
@@ -76,9 +79,26 @@ public class NotificationService {
         return new SendNotificationSummaryResponse(
                 "Sent successfully",
                 receivers.size(),
-                request.getTargetRole().name(),
+                request.getTargetRole(),
                 receivers.stream().map(Account::getUsername).toList()
         );
+    }
+
+    public List<NotificationResponse> getNotificationsForUser(Integer userId) {
+        Account user = accountRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return notificationRepository.findByTargetRole(user.getRole()).stream()
+                .map(n -> new NotificationResponse(
+                        n.getId(),
+                        n.getType(),
+                        n.getContent(),
+                        n.getCreatedAt(),
+                        n.getTargetRole(),
+                        n.getSender().getUsername(),
+                        n.getReceiver() != null ? n.getReceiver().getUsername() : null
+                ))
+                .toList();
     }
 
     @Transactional

@@ -19,4 +19,6 @@ public class CompanyResponse {
     // Company-specific fields
     private String companyName;
     private String taxCode;
+    private String location;
+    private Integer phoneNumber;
 }

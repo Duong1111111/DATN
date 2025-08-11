@@ -12,4 +12,15 @@ public class NotificationToRoleRequest {
     private Type type;
     private String content;
 
+    public void setTargetRole(String targetRole) {
+        if (targetRole != null) {
+            this.targetRole = Role.valueOf(targetRole.toUpperCase());
+        }
+    }
+    public void setType(String type){
+        if (type != null){
+            this.type = Type.valueOf(type.toUpperCase());
+        }
+    }
+
 }

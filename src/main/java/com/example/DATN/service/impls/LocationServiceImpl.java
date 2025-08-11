@@ -7,6 +7,7 @@ import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.CategoryRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.service.interfaces.LocationService;
+import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,11 @@ public class LocationServiceImpl implements LocationService {
     private AccountRepository accountRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    private final TimeAgoUtil timeAgoUtil;
+
+    public LocationServiceImpl(TimeAgoUtil timeAgoUtil) {
+        this.timeAgoUtil = timeAgoUtil;
+    }
 
     @Override
     public List<LocationResponse> getAll() {
