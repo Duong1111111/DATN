@@ -50,7 +50,9 @@ public class LocationServiceImpl implements LocationService {
         location.setUpdatedAt(LocalDateTime.now());
         location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
         location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
-        return toResponse(locationRepository.save(location));
+        locationRepository.save(location);
+        timeAgoUtil.notifyLocationCreated(location);
+        return toResponse(location);
     }
 
     @Override

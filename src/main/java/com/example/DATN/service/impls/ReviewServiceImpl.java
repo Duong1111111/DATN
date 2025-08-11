@@ -9,6 +9,7 @@ import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.repository.ReviewRepository;
 import com.example.DATN.service.interfaces.ReviewService;
+import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final AccountRepository accountRepository;
     private final LocationRepository locationRepository;
+    private final TimeAgoUtil timeAgoUtil;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, AccountRepository accountRepository, LocationRepository locationRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, AccountRepository accountRepository, LocationRepository locationRepository, TimeAgoUtil timeAgoUtil) {
         this.reviewRepository = reviewRepository;
         this.accountRepository = accountRepository;
         this.locationRepository = locationRepository;
+        this.timeAgoUtil = timeAgoUtil;
     }
 
     @Override
@@ -63,6 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
         r.setUpdatedAt(LocalDateTime.now());
 
         r = reviewRepository.save(r);
+        timeAgoUtil.notifyReviewCreated(r);
 
         ReviewResponse res = new ReviewResponse();
         res.setReviewId(r.getReviewId());

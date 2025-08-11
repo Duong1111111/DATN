@@ -83,7 +83,7 @@ public class NotificationController {
     @GetMapping("/ads-created")
     public ResponseEntity<BaseResponse<List<String>>> getAllAdCreatedNotifications() {
         List<String> messages = adRepository.findAll().stream()
-                .map(ad -> "Quảng cáo \"" + ad.getLocation().getName() + "\" được tạo " + timeAgoUtil.timeAgo(ad.getCreatedAt()))
+                .map(ad -> "Quảng cáo " + ad.getLocation().getName() + " được tạo " + timeAgoUtil.timeAgo(ad.getCreatedAt()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
     }
@@ -92,7 +92,7 @@ public class NotificationController {
     @GetMapping("/locations-created")
     public ResponseEntity<BaseResponse<List<String>>> getAllLocationCreatedNotifications() {
         List<String> messages = locationRepository.findAll().stream()
-                .map(loc -> "Địa điểm \"" + loc.getName() + "\" được tạo " + timeAgoUtil.timeAgo(loc.getCreatedAt()))
+                .map(loc -> "Địa điểm " + loc.getName() + " được tạo " + timeAgoUtil.timeAgo(loc.getCreatedAt()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
     }
@@ -102,7 +102,7 @@ public class NotificationController {
     public ResponseEntity<BaseResponse<List<String>>> getAllReviewCreatedNotifications() {
         List<String> messages = reviewRepository.findAll().stream()
                 .map(r -> "Người dùng " + r.getUser().getUsername() +
-                        " đã đánh giá \"" + r.getLocation().getName() + "\" " +
+                        " đã đánh giá " + r.getLocation().getName() + " " +
                         timeAgoUtil.timeAgo(r.getCreatedAt()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));

@@ -31,6 +31,15 @@ public class TimeAgoUtil {
             return "vừa xong";
         }
     }
+    private void notifyEntity(String content, Account sender, Role targetRole, Type type) {
+        Notification notification = new Notification();
+        notification.setType(type);
+        notification.setContent(content);
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setTargetRole(targetRole);
+        notification.setSender(sender);
+        notificationRepository.save(notification);
+    }
 
     public String companyRegisteredAgo(String companyName, LocalDateTime createdAt) {
         String name = (companyName != null) ? companyName : "Không rõ";
@@ -67,36 +76,22 @@ public class TimeAgoUtil {
         notificationRepository.save(notification);
     }
     public void notifyAdCreated(Ad ad) {
-        Notification notification = new Notification();
-        notification.setType(Type.INFO);
-        notification.setContent("Quảng cáo \"" + ad.getLocation().getName()
-                + "\" được tạo " + timeAgo(ad.getCreatedAt()));
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setTargetRole(Role.STAFF);
-        notification.setSender(ad.getCreatedBy());
-        notificationRepository.save(notification);
+        String content = "Quảng cáo \"" + ad.getLocation().getName()
+                + "\" được tạo " + timeAgo(ad.getCreatedAt());
+        notifyEntity(content, ad.getCreatedBy(), Role.STAFF, Type.INFO);
     }
 
     public void notifyLocationCreated(Location location) {
-        Notification notification = new Notification();
-        notification.setType(Type.INFO);
-        notification.setContent("Địa điểm \"" + location.getName()
-                + "\" được tạo " + timeAgo(location.getCreatedAt()));
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setTargetRole(Role.STAFF);
-        notification.setSender(location.getCreatedBy());
-        notificationRepository.save(notification);
+        String content = "Địa điểm \"" + location.getName()
+                + "\" được tạo " + timeAgo(location.getCreatedAt());
+        notifyEntity(content, location.getCreatedBy(), Role.STAFF, Type.INFO);
     }
 
     public void notifyReviewCreated(Review review) {
-        Notification notification = new Notification();
-        notification.setType(Type.INFO);
-        notification.setContent("Người dùng " + review.getUser().getUsername()
+        String content = "Người dùng " + review.getUser().getUsername()
                 + " đã đánh giá \"" + review.getLocation().getName()
-                + "\" " + timeAgo(review.getCreatedAt()));
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setTargetRole(Role.STAFF);
-        notification.setSender(review.getUser());
-        notificationRepository.save(notification);
+                + "\" " + timeAgo(review.getCreatedAt());
+        notifyEntity(content, review.getUser(), Role.STAFF, Type.INFO);
     }
+
 }

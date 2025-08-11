@@ -7,6 +7,7 @@ import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.AdRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.service.interfaces.AdService;
+import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,11 @@ public class AdServiceImpl implements AdService {
     private AdRepository adRepo;
     @Autowired private AccountRepository accountRepo;
     @Autowired private LocationRepository locationRepo;
+    private final TimeAgoUtil timeAgoUtil;
+
+    public AdServiceImpl(TimeAgoUtil timeAgoUtil) {
+        this.timeAgoUtil = timeAgoUtil;
+    }
 
     @Override
     public List<AdResponse> getAll() {
@@ -38,7 +44,9 @@ public class AdServiceImpl implements AdService {
         ad.setUpdatedAt(LocalDateTime.now());
         ad.setCreatedBy(accountRepo.findById(request.getCreatedById()).orElseThrow());
         ad.setLocation(locationRepo.findById(request.getLocationId()).orElseThrow());
-        return toResponse(adRepo.save(ad));
+        adRepo.save(ad);
+        timeAgoUtil.notifyAdCreated(ad);
+        return toResponse(ad);
     }
 
     @Override
