@@ -37,15 +37,22 @@ public class Account {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Company company;
 
-    @OneToMany(mappedBy = "user") // trong Review -> Account user
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // trong Review -> Account user
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "user") // trong Favorite -> Account user
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // trong Favorite -> Account user
     private List<Favorite> favorites;
 
-    @OneToMany(mappedBy = "createdBy") // trong Location -> Account createdBy
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true) // trong Location -> Account createdBy
     private List<Location> createdLocations;
 
-    @OneToMany(mappedBy = "createdBy") // trong Ad -> Account createdBy
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true) // trong Ad -> Account createdBy
     private List<Ad> ads;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notificationsSent;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notificationsReceived;
+
 }

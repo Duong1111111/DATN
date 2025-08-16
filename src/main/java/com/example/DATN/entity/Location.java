@@ -40,10 +40,10 @@ public class Location {
     private Category category;
 
     // Relationships
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites;
 
 }

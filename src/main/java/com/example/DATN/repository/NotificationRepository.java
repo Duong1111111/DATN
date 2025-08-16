@@ -3,7 +3,11 @@ package com.example.DATN.repository;
 import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Notification;
 import com.example.DATN.utils.enums.options.Role;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

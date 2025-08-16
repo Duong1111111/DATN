@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/**").permitAll()
                         .requestMatchers("/api/notifications/**").permitAll()
                         .requestMatchers("/api/accounts/me/user", "/api/accounts/me/company").authenticated()
+                        .requestMatchers("/api/contact-info/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
