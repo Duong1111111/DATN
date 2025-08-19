@@ -40,17 +40,14 @@ public class NotificationService {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND); // hoặc tạo mã lỗi riêng COMPANY_NOT_FOUND
         }
 
-        return timeAgoUtil.companyRegisteredAgo(
-                account.getCompany().getCompanyName(),
-                account.getCreatedAt()
-        );
+        return timeAgoUtil.companyRegisteredAgo(account.getCompany().getCompanyName());
     }
 
     public List<String> getAllCompanyPendingNotifications() {
         return accountRepository.findByStatus(AccountStatus.PENDING).stream()
                 .map(account -> timeAgoUtil.companyRegisteredAgo(
-                        account.getCompany().getCompanyName(),
-                        account.getCreatedAt()))
+                        account.getCompany().getCompanyName()
+                        ))
                 .collect(Collectors.toList());
     }
 

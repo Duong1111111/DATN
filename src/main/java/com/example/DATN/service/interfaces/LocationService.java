@@ -17,6 +17,8 @@ public interface LocationService {
 
     List<LocationResponse> getPendingLocations();
 
+    LocationResponse getPendingLocationDetail(Integer id);
+
     LocationResponse update(Integer id, LocationRequest request);
     void delete(Integer id);
 

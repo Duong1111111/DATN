@@ -3,12 +3,14 @@ package com.example.DATN.service.impls;
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
 import com.example.DATN.entity.Location;
+import com.example.DATN.exception.BusinessException;
 import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.CategoryRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.service.interfaces.LocationService;
 import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -108,6 +110,13 @@ public class LocationServiceImpl implements LocationService {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+    @Override
+    public LocationResponse getPendingLocationDetail(Integer id) {
+        Location location = locationRepository.findByLocationIdAndStatus(id, AccountStatus.PENDING)
+                .orElseThrow(() -> new BusinessException(ErrorCode.LOCATION_NOT_FOUND));
+        return toResponse(location);
+    }
+
 
     @Override
     public LocationResponse update(Integer id, LocationRequest request) {

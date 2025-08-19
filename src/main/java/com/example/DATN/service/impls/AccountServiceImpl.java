@@ -287,7 +287,7 @@ public class AccountServiceImpl implements AccountService {
         String username = getCurrentUsername();
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
-        return toResponse(account); //convert từ Account -> AccountResponse
+        return toResponse(account);
     }
 
     // Helper method lấy username từ SecurityContext

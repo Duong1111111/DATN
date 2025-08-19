@@ -2,6 +2,7 @@ package com.example.DATN.dto.response;
 
 import com.example.DATN.utils.enums.options.Role;
 import com.example.DATN.utils.enums.options.Type;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationResponse {
     private Long id;
     private Type type;

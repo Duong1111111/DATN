@@ -61,50 +61,84 @@ public class NotificationController {
 
     // Lấy thông báo cho tất cả company mới đăng ký
     @GetMapping("/company-registered")
-    public ResponseEntity<BaseResponse<List<String>>> getAllCompanyRegisteredNotifications() {
-        List<String> messages = companyRepository.findAll().stream()
-                .map(c -> timeAgoUtil.companyRegisteredAgo(c.getCompanyName(), c.getAccount().getCreatedAt()))
+    public ResponseEntity<BaseResponse<List<NotificationResponse>>> getAllCompanyRegisteredNotifications() {
+        List<NotificationResponse> responses = companyRepository.findAll().stream()
+                .map(c -> {
+                    NotificationResponse res = new NotificationResponse();
+                    res.setContent(timeAgoUtil.companyRegisteredAgo(c.getCompanyName()));
+                    res.setCreatedAt(c.getAccount().getCreatedAt());
+//                    res.setTargetRole(Role.STAFF);
+//                    res.setSenderUsername(c.getAccount().getUsername());
+                    return res;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, responses));
     }
 
     // Lấy thông báo cho tất cả user mới tạo
     @GetMapping("/user-registered")
-    public ResponseEntity<BaseResponse<List<String>>> getAllUserRegisteredNotifications() {
-        List<String> messages = accountRepository.findAll().stream()
+    public ResponseEntity<BaseResponse<List<NotificationResponse>>> getAllUserRegisteredNotifications() {
+        List<NotificationResponse> responses = accountRepository.findAll().stream()
                 .filter(a -> a.getRole() == Role.USER && a.getUser() != null)
-                .map(a -> timeAgoUtil.userCreatedAgo(a.getUsername(), a.getCreatedAt()))
+                .map(a -> {
+                    NotificationResponse res = new NotificationResponse();
+                    res.setContent(timeAgoUtil.userCreatedAgo(a.getUsername()));
+                    res.setCreatedAt(a.getCreatedAt());
+//                    res.setTargetRole(Role.STAFF);
+//                    res.setSenderUsername(a.getUsername());
+                    return res;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, responses));
     }
 
     // Lấy thông báo cho tất cả quảng cáo
     @GetMapping("/ads-created")
-    public ResponseEntity<BaseResponse<List<String>>> getAllAdCreatedNotifications() {
-        List<String> messages = adRepository.findAll().stream()
-                .map(ad -> "Quảng cáo " + ad.getLocation().getName() + " được tạo " + timeAgoUtil.timeAgo(ad.getCreatedAt()))
+    public ResponseEntity<BaseResponse<List<NotificationResponse>>> getAllAdCreatedNotifications() {
+        List<NotificationResponse> responses = adRepository.findAll().stream()
+                .map(ad -> {
+                    NotificationResponse res = new NotificationResponse();
+                    res.setContent("Quảng cáo " + ad.getLocation().getName() + " đã được tạo ");
+                    res.setCreatedAt(ad.getCreatedAt());
+//                    res.setTargetRole(Role.STAFF);
+//                    res.setSenderUsername(ad.getCreatedBy().getUsername());
+                    return res;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, responses));
     }
 
     // Lấy thông báo cho tất cả địa điểm
     @GetMapping("/locations-created")
-    public ResponseEntity<BaseResponse<List<String>>> getAllLocationCreatedNotifications() {
-        List<String> messages = locationRepository.findAll().stream()
-                .map(loc -> "Địa điểm " + loc.getName() + " được tạo " + timeAgoUtil.timeAgo(loc.getCreatedAt()))
+    public ResponseEntity<BaseResponse<List<NotificationResponse>>> getAllLocationCreatedNotifications() {
+        List<NotificationResponse> responses = locationRepository.findAll().stream()
+                .map(loc -> {
+                    NotificationResponse res = new NotificationResponse();
+                    res.setContent("Địa điểm " + loc.getName() + " đã được tạo ");
+                    res.setCreatedAt(loc.getCreatedAt());
+//                    res.setTargetRole(Role.STAFF);
+//                    res.setSenderUsername(loc.getCreatedBy().getUsername());
+                    return res;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, responses));
     }
 
     // Lấy thông báo cho tất cả review
     @GetMapping("/reviews-created")
-    public ResponseEntity<BaseResponse<List<String>>> getAllReviewCreatedNotifications() {
-        List<String> messages = reviewRepository.findAll().stream()
-                .map(r -> "Người dùng " + r.getUser().getUsername() +
-                        " đã đánh giá " + r.getLocation().getName() + " " +
-                        timeAgoUtil.timeAgo(r.getCreatedAt()))
+    public ResponseEntity<BaseResponse<List<NotificationResponse>>> getAllReviewCreatedNotifications() {
+        List<NotificationResponse> responses = reviewRepository.findAll().stream()
+                .map(r -> {
+                    NotificationResponse res = new NotificationResponse();
+                    res.setContent("Người dùng " + r.getUser().getUsername() +
+                            " đã đánh giá " + r.getLocation().getName() + " ");
+                    res.setCreatedAt(r.getCreatedAt());
+//                    res.setTargetRole(Role.STAFF);
+//                    res.setSenderUsername(r.getUser().getUsername());
+                    return res;
+                })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, messages));
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, responses));
     }
 
 }

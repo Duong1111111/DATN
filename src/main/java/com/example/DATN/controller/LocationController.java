@@ -55,6 +55,11 @@ public class LocationController {
     public ResponseEntity<List<LocationResponse>> getPendingLocations() {
         return ResponseEntity.ok(locationService.getPendingLocations());
     }
+    @GetMapping("/pending/{id}")
+    public ResponseEntity<BaseResponse<LocationResponse>> getPendingLocationDetail(@PathVariable Integer id) {
+        LocationResponse response = locationService.getPendingLocationDetail(id);
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, response));
+    }
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         locationService.delete(id);
