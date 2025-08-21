@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,9 +19,12 @@ public class LocationRequest {
     private Double price;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private String image;
+    private String website;
+    private Integer phoneNumber;
     private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    // Danh sách ID ảnh cần xóa (nếu có)
+    private List<Integer> imagesToDelete;
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,10 @@ public class Location {
     private Double price;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private String image;
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
+    private List<LocationImage> images = new ArrayList<>();
+    private String website;
+    private Integer phoneNumber;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 

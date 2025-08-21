@@ -24,11 +24,11 @@ public class Review {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private Account user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "location_id")
     private Location location;
 

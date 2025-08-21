@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,7 +18,9 @@ public class LocationResponse {
     private Double price;
     private LocalTime openTime;
     private LocalTime closeTime;
-    private String image;
+    private List<String> images;
+    private String website;
+    private Integer phoneNumber;
     private AccountStatus status;
     private String categoryName;
     private String createdByUsername;

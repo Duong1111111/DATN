@@ -3,17 +3,21 @@ package com.example.DATN.service.impls;
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
 import com.example.DATN.entity.Location;
+import com.example.DATN.entity.LocationImage;
 import com.example.DATN.exception.BusinessException;
-import com.example.DATN.repository.AccountRepository;
-import com.example.DATN.repository.CategoryRepository;
-import com.example.DATN.repository.LocationRepository;
+import com.example.DATN.repository.*;
 import com.example.DATN.service.interfaces.LocationService;
 import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.responsecode.ErrorCode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import com.google.cloud.storage.Storage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +30,18 @@ public class LocationServiceImpl implements LocationService {
     private AccountRepository accountRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private FavoriteRepository favoriteRepository;
+    @Autowired
+    private ImageUploadService imageUploadService;
     private final TimeAgoUtil timeAgoUtil;
 
-    public LocationServiceImpl(TimeAgoUtil timeAgoUtil) {
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
+
+    public LocationServiceImpl(Storage storage, TimeAgoUtil timeAgoUtil) {
         this.timeAgoUtil = timeAgoUtil;
     }
 
@@ -38,7 +51,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationResponse create(LocationRequest request) {
+    public LocationResponse create(LocationRequest request, List<MultipartFile> imageFiles) {
         Location location = new Location();
         location.setName(request.getName());
         location.setDescription(request.getDescription());
@@ -46,19 +59,45 @@ public class LocationServiceImpl implements LocationService {
         location.setPrice(request.getPrice());
         location.setOpenTime(request.getOpenTime());
         location.setCloseTime(request.getCloseTime());
-        location.setImage(request.getImage());
+        location.setPhoneNumber(request.getPhoneNumber());
+        location.setWebsite(request.getWebsite());
         location.setStatus(AccountStatus.PENDING);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
         location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
         location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
-        locationRepository.save(location);
-        timeAgoUtil.notifyLocationCreated(location);
-        return toResponse(location);
+        Location savedLocation = locationRepository.save(location);
+        Integer locationId = savedLocation.getLocationId();
+
+        try {
+            // Upload nhiều ảnh
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                for (MultipartFile file : imageFiles) {
+                    if (!file.isEmpty()) {
+                        String folderPath = "locations/" + savedLocation.getLocationId();
+                        String imageUrl = imageUploadService.uploadImage(file, folderPath);
+
+                        LocationImage locationImage = new LocationImage();
+                        locationImage.setImageUrl(imageUrl);
+                        locationImage.setLocation(savedLocation);
+
+                        savedLocation.getImages().add(locationImage);
+                    }
+                }
+                savedLocation = locationRepository.save(savedLocation);
+            }
+
+            timeAgoUtil.notifyLocationCreated(savedLocation);
+            return toResponse(savedLocation);
+
+        } catch (Exception e) {
+            locationRepository.deleteById(savedLocation.getLocationId());
+            throw new RuntimeException("Không thể upload ảnh, đã hủy tạo địa điểm. Lỗi: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    public LocationResponse createbyStaff(LocationRequest request) {
+    public LocationResponse createbyStaff(LocationRequest request, List<MultipartFile> imageFiles) {
         Location location = new Location();
         location.setName(request.getName());
         location.setDescription(request.getDescription());
@@ -66,13 +105,40 @@ public class LocationServiceImpl implements LocationService {
         location.setPrice(request.getPrice());
         location.setOpenTime(request.getOpenTime());
         location.setCloseTime(request.getCloseTime());
-        location.setImage(request.getImage());
+        location.setPhoneNumber(request.getPhoneNumber());
+        location.setWebsite(request.getWebsite());
         location.setStatus(AccountStatus.ACTIVE);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
         location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
         location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
-        return toResponse(locationRepository.save(location));
+        Location savedLocation = locationRepository.save(location);
+        Integer locationId = savedLocation.getLocationId();
+        try {
+            // Upload nhiều ảnh
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                for (MultipartFile file : imageFiles) {
+                    if (!file.isEmpty()) {
+                        String folderPath = "locations/" + savedLocation.getLocationId();
+                        String imageUrl = imageUploadService.uploadImage(file, folderPath);
+
+                        LocationImage locationImage = new LocationImage();
+                        locationImage.setImageUrl(imageUrl);
+                        locationImage.setLocation(savedLocation);
+
+                        savedLocation.getImages().add(locationImage);
+                    }
+                }
+                savedLocation = locationRepository.save(savedLocation);
+            }
+
+            timeAgoUtil.notifyLocationCreated(savedLocation);
+            return toResponse(savedLocation);
+
+        } catch (Exception e) {
+            locationRepository.deleteById(savedLocation.getLocationId());
+            throw new RuntimeException("Không thể upload ảnh, đã hủy tạo địa điểm. Lỗi: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -119,7 +185,7 @@ public class LocationServiceImpl implements LocationService {
 
 
     @Override
-    public LocationResponse update(Integer id, LocationRequest request) {
+    public LocationResponse update(Integer id, LocationRequest request, List<MultipartFile> imageFiles) {
         Location location = locationRepository.findById(id).orElseThrow();
         if (request.getName() != null) location.setName(request.getName());
         if (request.getDescription() != null) location.setDescription(request.getDescription());
@@ -127,14 +193,45 @@ public class LocationServiceImpl implements LocationService {
         if (request.getPrice() != null) location.setPrice(request.getPrice());
         if (request.getOpenTime() != null) location.setOpenTime(request.getOpenTime());
         if (request.getCloseTime() != null) location.setCloseTime(request.getCloseTime());
-        if (request.getImage() != null) location.setImage(request.getImage());
+        if (request.getPhoneNumber() != null) location.setPhoneNumber(request.getPhoneNumber());
+        if (request.getWebsite() != null) location.setWebsite(request.getWebsite());
         if (request.getStatus() != null) location.setStatus(request.getStatus());
         if (request.getCategoryId() != null) {
             location.setCategory(categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Category not found")));
         }
+        try {
+            // ✅ Xóa ảnh cũ nếu có yêu cầu
+            if (request.getImagesToDelete() != null && !request.getImagesToDelete().isEmpty()) {
+                List<LocationImage> imagesToRemove = location.getImages().stream()
+                        .filter(img -> request.getImagesToDelete().contains(img.getId()))
+                        .toList();
+
+                location.getImages().removeAll(imagesToRemove);
+            }
+
+            // ✅ Thêm ảnh mới
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                for (MultipartFile file : imageFiles) {
+                    if (!file.isEmpty()) {
+                        String folderPath = "locations/" + id;
+                        String imageUrl = imageUploadService.uploadImage(file, folderPath);
+
+                        LocationImage locationImage = new LocationImage();
+                        locationImage.setImageUrl(imageUrl);
+                        locationImage.setLocation(location);
+
+                        location.getImages().add(locationImage);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Không thể xử lý ảnh: " + e.getMessage(), e);
+        }
         location.setUpdatedAt(LocalDateTime.now());
-        return toResponse(locationRepository.save(location));
+        Location updated = locationRepository.save(location);
+        return toResponse(updated);
     }
 
     @Override
@@ -147,6 +244,40 @@ public class LocationServiceImpl implements LocationService {
                 .orElseThrow(() -> new RuntimeException("Location not found with id: " + locationId));
         return toResponse(location);
     }
+    @Override
+    public long getTotalReach(Integer locationId) {
+        long reviewCount = reviewRepository.countByLocation_LocationId(locationId);
+        long favoriteCount = favoriteRepository.countByLocation_LocationId(locationId);
+        return reviewCount + favoriteCount;
+    }
+
+    // Tương tác mới (trong khoảng thời gian)
+    @Override
+    public long getNewInteractions(Integer locationId, LocalDateTime from, LocalDateTime to) {
+        long reviewCount = reviewRepository.countByLocation_LocationIdAndCreatedAtBetween(locationId, from, to);
+        long favoriteCount = favoriteRepository.countByLocation_LocationIdAndCreatedAtBetween(locationId, from, to);
+        return reviewCount + favoriteCount;
+    }
+
+    // Tỷ lệ chuyển đổi
+    @Override
+    public double getConversionRate(Integer locationId, LocalDateTime from, LocalDateTime to) {
+        long totalReach = getTotalReach(locationId);
+        long newInteractions = getNewInteractions(locationId, from, to);
+        return totalReach == 0 ? 0 : (newInteractions * 100.0 / totalReach);
+    }
+    @Override
+    public double compareWithPreviousMonth(Integer locationId) {
+        LocalDateTime startThisMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime startLastMonth = startThisMonth.minusMonths(1);
+        LocalDateTime endLastMonth = startThisMonth.minusSeconds(1);
+
+        long thisMonth = getNewInteractions(locationId, startThisMonth, LocalDateTime.now());
+        long lastMonth = getNewInteractions(locationId, startLastMonth, endLastMonth);
+
+        if (lastMonth == 0) return 100;
+        return ((double) (thisMonth - lastMonth) / lastMonth) * 100.0;
+    }
 
     private LocationResponse toResponse(Location l) {
         LocationResponse res = new LocationResponse();
@@ -155,7 +286,11 @@ public class LocationServiceImpl implements LocationService {
         res.setDescription(l.getDescription());
         res.setLocation(l.getLocation());
         res.setPrice(l.getPrice());
-        res.setImage(l.getImage());
+        res.setImages(l.getImages().stream()
+                .map(LocationImage::getImageUrl)
+                .collect(Collectors.toList()));
+        res.setPhoneNumber(l.getPhoneNumber());
+        res.setWebsite(l.getWebsite());
         res.setOpenTime(l.getOpenTime());
         res.setCloseTime(l.getCloseTime());
         res.setStatus(l.getStatus());
