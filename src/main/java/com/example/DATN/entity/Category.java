@@ -1,10 +1,12 @@
 package com.example.DATN.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,8 +25,8 @@ public class Category {
     private LocalDateTime updatedAt;
     private Boolean status;
 
-    @OneToMany(mappedBy = "category")
-    private List<Location> locations;
+    @ManyToMany(mappedBy = "categories")
+    private List<Location> locations = new ArrayList<>();
 
 }
 

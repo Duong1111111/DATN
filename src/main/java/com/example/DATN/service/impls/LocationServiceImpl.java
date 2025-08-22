@@ -2,6 +2,7 @@ package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
+import com.example.DATN.entity.Category;
 import com.example.DATN.entity.Location;
 import com.example.DATN.entity.LocationImage;
 import com.example.DATN.exception.BusinessException;
@@ -64,7 +65,11 @@ public class LocationServiceImpl implements LocationService {
         location.setStatus(AccountStatus.PENDING);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
-        location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+        if (categories.isEmpty()) {
+            throw new RuntimeException("Categories not found");
+        }
+        location.setCategories(categories);
         location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
         Location savedLocation = locationRepository.save(location);
         Integer locationId = savedLocation.getLocationId();
@@ -110,7 +115,11 @@ public class LocationServiceImpl implements LocationService {
         location.setStatus(AccountStatus.ACTIVE);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
-        location.setCategory(categoryRepository.findById(request.getCategoryId()).orElseThrow());
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+        if (categories.isEmpty()) {
+            throw new RuntimeException("Categories not found");
+        }
+        location.setCategories(categories);
         location.setCreatedBy(accountRepository.findById(request.getCreatedBy()).orElseThrow());
         Location savedLocation = locationRepository.save(location);
         Integer locationId = savedLocation.getLocationId();
@@ -196,9 +205,10 @@ public class LocationServiceImpl implements LocationService {
         if (request.getPhoneNumber() != null) location.setPhoneNumber(request.getPhoneNumber());
         if (request.getWebsite() != null) location.setWebsite(request.getWebsite());
         if (request.getStatus() != null) location.setStatus(request.getStatus());
-        if (request.getCategoryId() != null) {
-            location.setCategory(categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found")));
+        if (request.getCategoryIds() != null) {
+            List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
+            location.getCategories().clear();
+            location.getCategories().addAll(categories);
         }
         try {
             // ✅ Xóa ảnh cũ nếu có yêu cầu
@@ -296,7 +306,11 @@ public class LocationServiceImpl implements LocationService {
         res.setStatus(l.getStatus());
         res.setCreatedAt(l.getCreatedAt());
         res.setUpdatedAt(l.getUpdatedAt());
-        res.setCategoryName(l.getCategory().getName());
+        res.setCategoryNames(
+                l.getCategories().stream()
+                        .map(Category::getName)
+                        .collect(Collectors.toList())
+        );
         res.setCreatedByUsername(l.getCreatedBy().getUsername());
         return res;
     }

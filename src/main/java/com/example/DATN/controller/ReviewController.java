@@ -5,6 +5,7 @@ import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.service.interfaces.ReviewService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
 import com.example.DATN.utils.enums.responsecode.SuccessCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,11 +31,10 @@ public class ReviewController {
         return reviewService.getById(id);
     }
 
-    @PostMapping
-    public ReviewResponse createReview(@RequestBody ReviewRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ReviewResponse createReview(@ModelAttribute ReviewRequest request) {
         return reviewService.create(request);
     }
-
     @PutMapping("/{id}/approve")
     public ResponseEntity<ReviewResponse> approve(@PathVariable Integer id) {
         return ResponseEntity.ok(reviewService.approveReview(id));
@@ -49,8 +49,9 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getPendingReviews());
     }
 
-    @PutMapping("/{id}")
-    public ReviewResponse updateReview(@PathVariable Integer id, @RequestBody ReviewRequest request) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ReviewResponse updateReview(@PathVariable Integer id,
+                                       @ModelAttribute ReviewRequest request) {
         return reviewService.update(id, request);
     }
 

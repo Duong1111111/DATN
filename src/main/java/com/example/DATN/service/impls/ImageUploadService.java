@@ -16,17 +16,17 @@ import java.util.UUID;
 public class ImageUploadService {
 
     private final Storage storage;
-    private final String BUCKET_NAME = "travelsuggest"; // <-- Tên bucket của bạn
+    private final String BUCKET_NAME = "travelsuggest";
 
     public ImageUploadService() throws IOException {
-        // Đường dẫn tới file key .json của bạn
-        // Đảm bảo file này nằm trong thư mục resources của project
-        FileInputStream serviceAccountStream = new FileInputStream("src/main/resources/service-account-test.json");
+        try (FileInputStream serviceAccountStream =
+                     new FileInputStream("E:/Lms/gen-lang-client-0154921035-b9cccfbfbca2.json")) {
 
-        this.storage = StorageOptions.newBuilder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
-                .build()
-                .getService();
+            this.storage = StorageOptions.newBuilder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+                    .build()
+                    .getService();
+        }
     }
 
     public String uploadImage(MultipartFile file, String folderPath) throws IOException {

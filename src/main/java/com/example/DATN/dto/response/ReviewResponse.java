@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Setter
 public class ReviewResponse {
@@ -14,6 +16,7 @@ public class ReviewResponse {
     private AccountStatus status;
     private String username;
     private String locationName;
+    private List<String> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

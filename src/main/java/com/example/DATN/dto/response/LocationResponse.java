@@ -22,7 +22,7 @@ public class LocationResponse {
     private String website;
     private Integer phoneNumber;
     private AccountStatus status;
-    private String categoryName;
+    private List<String> categoryNames;
     private String createdByUsername;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

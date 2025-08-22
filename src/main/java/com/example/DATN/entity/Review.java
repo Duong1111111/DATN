@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,6 +22,8 @@ public class Review {
     private String comment;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImage> images = new ArrayList<>();
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

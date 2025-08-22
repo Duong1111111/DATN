@@ -39,9 +39,13 @@ public class Location {
     @JoinColumn(name = "created_by")
     private Account createdBy;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToMany
+    @JoinTable(
+            name = "location_category",
+            joinColumns = @JoinColumn(name = "location_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories = new ArrayList<>();
 
     // Relationships
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)

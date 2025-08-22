@@ -15,7 +15,7 @@ public class LocationRequest {
     private String description;
     private String location;
     private Integer createdBy;
-    private Integer categoryId;
+    private List<Integer> categoryIds;
     private Double price;
     private LocalTime openTime;
     private LocalTime closeTime;

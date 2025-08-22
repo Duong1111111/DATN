@@ -5,6 +5,7 @@ import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Location;
 import com.example.DATN.entity.Review;
+import com.example.DATN.entity.ReviewImage;
 import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.repository.ReviewRepository;
@@ -12,7 +13,9 @@ import com.example.DATN.service.interfaces.ReviewService;
 import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,12 +26,14 @@ public class ReviewServiceImpl implements ReviewService {
     private final AccountRepository accountRepository;
     private final LocationRepository locationRepository;
     private final TimeAgoUtil timeAgoUtil;
+    private final ImageUploadService imageUploadService;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, AccountRepository accountRepository, LocationRepository locationRepository, TimeAgoUtil timeAgoUtil) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, AccountRepository accountRepository, LocationRepository locationRepository, TimeAgoUtil timeAgoUtil, ImageUploadService imageUploadService) {
         this.reviewRepository = reviewRepository;
         this.accountRepository = accountRepository;
         this.locationRepository = locationRepository;
         this.timeAgoUtil = timeAgoUtil;
+        this.imageUploadService = imageUploadService;
     }
 
     @Override
@@ -41,6 +46,9 @@ public class ReviewServiceImpl implements ReviewService {
             res.setStatus(r.getStatus());
             res.setUsername(r.getUser().getUsername());
             res.setLocationName(r.getLocation().getName());
+            res.setImages(
+                    r.getImages().stream().map(ReviewImage::getImageUrl).toList()
+            );
             res.setCreatedAt(r.getCreatedAt());
             res.setUpdatedAt(r.getUpdatedAt());
             return res;
@@ -64,21 +72,26 @@ public class ReviewServiceImpl implements ReviewService {
         r.setStatus(AccountStatus.PENDING);
         r.setCreatedAt(LocalDateTime.now());
         r.setUpdatedAt(LocalDateTime.now());
+        if (request.getImages() != null) {
+            for (MultipartFile file : request.getImages()) {
+                if (file != null && !file.isEmpty()) {
+                    try {
+                        String url = imageUploadService.uploadImage(file, "reviews");
+                        ReviewImage ri = new ReviewImage();
+                        ri.setImageUrl(url);
+                        ri.setReview(r);
+                        r.getImages().add(ri);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Không thể upload ảnh: " + file.getOriginalFilename(), e);
+                    }
+                }
+            }
+        }
 
         r = reviewRepository.save(r);
         timeAgoUtil.notifyReviewCreated(r);
 
-        ReviewResponse res = new ReviewResponse();
-        res.setReviewId(r.getReviewId());
-        res.setRating(r.getRating());
-        res.setComment(r.getComment());
-        res.setStatus(r.getStatus());
-        res.setUsername(r.getUser().getUsername());
-        res.setLocationName(r.getLocation().getName());
-        res.setCreatedAt(r.getCreatedAt());
-        res.setUpdatedAt(r.getUpdatedAt());
-
-        return res;
+        return toResponse(r);
     }
     @Override
     public ReviewResponse approveReview(Integer reviewId) {
@@ -139,6 +152,25 @@ public class ReviewServiceImpl implements ReviewService {
         if (request.getComment() != null) r.setComment(request.getComment());
         if (request.getStatus() != null) r.setStatus(request.getStatus());
         r.setUpdatedAt(LocalDateTime.now());
+        if (request.getRemoveImageIds() != null && !request.getRemoveImageIds().isEmpty()) {
+            r.getImages().removeIf(img -> request.getRemoveImageIds().contains(img.getId()));
+        }
+
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            for (MultipartFile file : request.getImages()) {
+                if (file != null && !file.isEmpty()) { // ✅ check tránh file rỗng
+                    try {
+                        String url = imageUploadService.uploadImage(file, "reviews");
+                        ReviewImage ri = new ReviewImage();
+                        ri.setImageUrl(url);
+                        ri.setReview(r);
+                        r.getImages().add(ri);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Không thể upload ảnh: " + file.getOriginalFilename(), e);
+                    }
+                }
+            }
+        }
 
         r = reviewRepository.save(r);
 
@@ -149,6 +181,9 @@ public class ReviewServiceImpl implements ReviewService {
         res.setStatus(r.getStatus());
         res.setUsername(r.getUser().getUsername());
         res.setLocationName(r.getLocation().getName());
+        res.setImages(
+                r.getImages().stream().map(ReviewImage::getImageUrl).toList()
+        );
         res.setCreatedAt(r.getCreatedAt());
         res.setUpdatedAt(r.getUpdatedAt());
 
@@ -167,17 +202,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review r = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found with id: " + reviewId));
 
-        ReviewResponse res = new ReviewResponse();
-        res.setReviewId(r.getReviewId());
-        res.setRating(r.getRating());
-        res.setComment(r.getComment());
-        res.setStatus(r.getStatus());
-        res.setUsername(r.getUser().getUsername());
-        res.setLocationName(r.getLocation().getName());
-        res.setCreatedAt(r.getCreatedAt());
-        res.setUpdatedAt(r.getUpdatedAt());
-
-        return res;
+        return toResponse(r);
     }
 
     private ReviewResponse toResponse(Review review) {
@@ -188,6 +213,11 @@ public class ReviewServiceImpl implements ReviewService {
         res.setStatus(review.getStatus());
         res.setUsername(review.getUser().getUsername());
         res.setLocationName(review.getLocation().getName());
+        res.setImages(
+                review.getImages().stream()
+                        .map(ReviewImage::getImageUrl)
+                        .toList()
+        );
         res.setCreatedAt(review.getCreatedAt());
         res.setUpdatedAt(review.getUpdatedAt());
         return res;
