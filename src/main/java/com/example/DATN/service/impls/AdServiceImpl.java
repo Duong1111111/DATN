@@ -3,12 +3,16 @@ package com.example.DATN.service.impls;
 import com.example.DATN.dto.request.AdRequest;
 import com.example.DATN.dto.response.AdResponse;
 import com.example.DATN.entity.Ad;
+import com.example.DATN.entity.Category;
+import com.example.DATN.entity.Location;
 import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.repository.AdRepository;
+import com.example.DATN.repository.CategoryRepository;
 import com.example.DATN.repository.LocationRepository;
 import com.example.DATN.service.interfaces.AdService;
 import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.example.DATN.utils.enums.options.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,7 @@ public class AdServiceImpl implements AdService {
     private AdRepository adRepo;
     @Autowired private AccountRepository accountRepo;
     @Autowired private LocationRepository locationRepo;
+    @Autowired private CategoryRepository categoryRepository;
     private final TimeAgoUtil timeAgoUtil;
 
     public AdServiceImpl(TimeAgoUtil timeAgoUtil) {
@@ -35,18 +40,46 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdResponse create(AdRequest request) {
+        if (request.getPaymentStatus() != PaymentStatus.SUCCESS) {
+            throw new RuntimeException("Payment required before creating Ad");
+        }
+        Location location = locationRepo.findById(request.getLocationId())
+                .orElseThrow(() -> new RuntimeException("Location not found"));
+        List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
         Ad ad = new Ad();
+        ad.setTitle(request.getTitle());
+        ad.setDescription(request.getDescription());
+        ad.setActions(request.getActions());
+        ad.setBudget(1_500_000d);
         ad.setStartDate(request.getStartDate());
         ad.setEndDate(request.getEndDate());
-        ad.setBudget(request.getBudget());
-        ad.setStatus(AccountStatus.PENDING);
+        ad.setStatus(AccountStatus.ACTIVE);
+        ad.setLocation(location);
+        ad.setCategories(categories);
         ad.setCreatedAt(LocalDateTime.now());
         ad.setUpdatedAt(LocalDateTime.now());
         ad.setCreatedBy(accountRepo.findById(request.getCreatedById()).orElseThrow());
-        ad.setLocation(locationRepo.findById(request.getLocationId()).orElseThrow());
+
         adRepo.save(ad);
-        timeAgoUtil.notifyAdCreated(ad);
-        return toResponse(ad);
+//        timeAgoUtil.notifyAdCreated(ad);
+        AdResponse res = new AdResponse();
+        res.setAdId(ad.getAdId());
+        res.setTitle(ad.getTitle());
+        res.setDescription(ad.getDescription());
+        res.setActions(ad.getActions().stream()
+                .map(Enum::name)
+                .toList());
+        res.setLocationName(location.getName());
+        res.setCategories(categories.stream().map(Category::getName).toList());
+        res.setStartDate(ad.getStartDate());
+        res.setEndDate(ad.getEndDate());
+        res.setCreatedByUsername(ad.getCreatedBy().getUsername());
+        res.setBudget(ad.getBudget());
+        res.setStatus(ad.getStatus());
+        res.setCreatedAt(ad.getCreatedAt());
+        res.setUpdatedAt(ad.getUpdatedAt());
+
+        return res;
     }
 
     @Override
@@ -91,7 +124,6 @@ public class AdServiceImpl implements AdService {
         Ad ad = adRepo.findById(id).orElseThrow();
         if (request.getStartDate() != null) ad.setStartDate(request.getStartDate());
         if (request.getEndDate() != null) ad.setEndDate(request.getEndDate());
-        if (request.getBudget() != null) ad.setBudget(request.getBudget());
         if (request.getStatus() != null) ad.setStatus(request.getStatus());
         if (request.getLocationId() != null) {
             ad.setLocation(locationRepo.findById(request.getLocationId())
