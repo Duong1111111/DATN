@@ -2,6 +2,7 @@ package com.example.DATN.controller;
 
 import com.example.DATN.dto.request.FavoriteRequest;
 import com.example.DATN.dto.response.FavoriteResponse;
+import com.example.DATN.dto.response.LocationDetailResponse;
 import com.example.DATN.service.interfaces.FavoriteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +42,19 @@ public class FavoriteController {
     public ResponseEntity<Void> deleteFavorite(@PathVariable Integer id) {
         favoriteService.delete(id);
         return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
+    @PostMapping("/toggle/{locationId}")
+    public ResponseEntity<FavoriteResponse> toggleFavorite(@PathVariable Integer locationId) {
+        FavoriteResponse response = favoriteService.toggleFavorite(locationId);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<List<FavoriteResponse>> getMyFavorites() {
+        return ResponseEntity.ok(favoriteService.getMyFavorites());
+    }
+
+    @GetMapping("/{favorId}/detail")
+    public ResponseEntity<LocationDetailResponse> getFavoriteDetail(@PathVariable Integer favorId) {
+        return ResponseEntity.ok(favoriteService.getFavoriteLocationDetail(favorId));
     }
 }
