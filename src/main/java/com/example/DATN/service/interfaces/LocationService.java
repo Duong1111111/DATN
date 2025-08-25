@@ -2,6 +2,7 @@ package com.example.DATN.service.interfaces;
 
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
+import com.example.DATN.entity.Location;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,6 +28,8 @@ public interface LocationService {
     LocationResponse getPendingLocationDetail(Integer id);
 
 //    LocationResponse update(Integer id, LocationRequest request);
+
+    List<LocationResponse> getLocationsByUserIdDefault();
 
     LocationResponse update(Integer id, LocationRequest request, List<MultipartFile> imageFiles);
 

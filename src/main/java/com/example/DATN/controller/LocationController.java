@@ -2,6 +2,7 @@ package com.example.DATN.controller;
 
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
+import com.example.DATN.entity.Location;
 import com.example.DATN.service.interfaces.LocationService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
 import com.example.DATN.utils.enums.responsecode.SuccessCode;
@@ -91,6 +92,12 @@ public class LocationController {
     public ResponseEntity<BaseResponse<LocationResponse>> getPendingLocationDetail(@PathVariable Integer id) {
         LocationResponse response = locationService.getPendingLocationDetail(id);
         return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, response));
+    }
+
+    @GetMapping("/me/company")
+    public ResponseEntity<List<LocationResponse>> getLocationsByDefaultUser() {
+        List<LocationResponse> locations = locationService.getLocationsByUserIdDefault();
+        return ResponseEntity.ok(locations);
     }
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){

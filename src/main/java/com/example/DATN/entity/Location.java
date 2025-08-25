@@ -22,7 +22,7 @@ public class Location {
     private String name;
     private String description;
     private String location;
-    private Double price;
+    private String price;
     private LocalTime openTime;
     private LocalTime closeTime;
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)

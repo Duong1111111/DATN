@@ -192,6 +192,16 @@ public class LocationServiceImpl implements LocationService {
         return toResponse(location);
     }
 
+    @Override
+    public List<LocationResponse> getLocationsByUserIdDefault() {
+        Integer defaultUserId = 2;
+        List<Location> locations = locationRepository.findByCreatedByUserId(defaultUserId);
+
+        return locations.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
 
     @Override
     public LocationResponse update(Integer id, LocationRequest request, List<MultipartFile> imageFiles) {

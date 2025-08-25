@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface LocationRepository extends JpaRepository<Location, Integer> {
     List<Location> findAllByStatus(AccountStatus status);
     Optional<Location> findByLocationIdAndStatus(Integer locationId, AccountStatus status);
-
+    List<Location> findByCreatedByUserId(Integer userId);
 }

@@ -15,7 +15,7 @@ public class LocationResponse {
     private String name;
     private String description;
     private String location;
-    private Double price;
+    private String price;
     private LocalTime openTime;
     private LocalTime closeTime;
     private List<String> images;

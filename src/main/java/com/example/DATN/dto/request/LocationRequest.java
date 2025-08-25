@@ -16,7 +16,7 @@ public class LocationRequest {
     private String location;
     private Integer createdBy;
     private List<Integer> categoryIds;
-    private Double price;
+    private String price;
     private LocalTime openTime;
     private LocalTime closeTime;
     private String website;

@@ -5,10 +5,7 @@ import com.example.DATN.dto.response.AdResponse;
 import com.example.DATN.entity.Ad;
 import com.example.DATN.entity.Category;
 import com.example.DATN.entity.Location;
-import com.example.DATN.repository.AccountRepository;
-import com.example.DATN.repository.AdRepository;
-import com.example.DATN.repository.CategoryRepository;
-import com.example.DATN.repository.LocationRepository;
+import com.example.DATN.repository.*;
 import com.example.DATN.service.interfaces.AdService;
 import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
@@ -40,9 +37,6 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdResponse create(AdRequest request) {
-        if (request.getPaymentStatus() != PaymentStatus.SUCCESS) {
-            throw new RuntimeException("Payment required before creating Ad");
-        }
         Location location = locationRepo.findById(request.getLocationId())
                 .orElseThrow(() -> new RuntimeException("Location not found"));
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
@@ -53,7 +47,7 @@ public class AdServiceImpl implements AdService {
         ad.setBudget(1_500_000d);
         ad.setStartDate(request.getStartDate());
         ad.setEndDate(request.getEndDate());
-        ad.setStatus(AccountStatus.ACTIVE);
+        ad.setStatus(AccountStatus.PENDING);
         ad.setLocation(location);
         ad.setCategories(categories);
         ad.setCreatedAt(LocalDateTime.now());
@@ -81,6 +75,7 @@ public class AdServiceImpl implements AdService {
 
         return res;
     }
+
 
     @Override
     public AdResponse approveAd(Integer adId) {
