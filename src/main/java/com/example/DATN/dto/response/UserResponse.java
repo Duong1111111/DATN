@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +17,8 @@ public class UserResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // User-specific fields
-    private String hobby;
+    private List<String> travelStyles;
+    private List<String> interests;
+    private String budget;
+    private List<String> companions;
 }

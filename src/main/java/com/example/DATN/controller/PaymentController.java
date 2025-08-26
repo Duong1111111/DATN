@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.options.PaymentStatus;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,8 @@ public class PaymentController {
     @Autowired
     private AdService adService;
 
+    private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
+
     @GetMapping("/create-payment")
     public ResponseEntity<?> createPayment(@RequestParam("amount") long amount, @RequestParam("adId") int adId) throws UnsupportedEncodingException {
 
@@ -43,10 +47,10 @@ public class PaymentController {
         vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan quang cao cho adId=" + adId);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan cho quang cao ID: " + adId);
         vnp_Params.put("vnp_OrderType", VnpayConfig.vnp_OrderType);
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", VnpayConfig.vnp_ReturnUrl); // Giữ nguyên returnUrl của backend
+        vnp_Params.put("vnp_ReturnUrl", VnpayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -69,10 +73,10 @@ public class PaymentController {
             if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                 hashData.append(fieldName);
                 hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                 query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
@@ -92,43 +96,48 @@ public class PaymentController {
 
     @GetMapping("/vnpay-return")
     public void vnpayReturn(HttpServletResponse response, @RequestParam Map<String, String> params) throws IOException {
-        String vnp_ResponseCode = params.get("vnp_ResponseCode");
-        String orderInfo = params.get("vnp_OrderInfo");
+        String frontendReturnUrl = "http://26.112.109.171:3000/payment-return";
 
-        // Trích xuất adId từ vnp_OrderInfo
-        int adId = -1;
         try {
-            adId = Integer.parseInt(orderInfo.replaceAll("[^0-9]", ""));
+            String vnp_ResponseCode = params.get("vnp_ResponseCode");
+            String orderInfo = params.get("vnp_OrderInfo");
+
+            logger.info("VNPAY Return Data: {}", params);
+
+            int adId = -1;
+            String numericPart = orderInfo.replaceAll("[^0-9]", "");
+            if (!numericPart.isEmpty()) {
+                adId = Integer.parseInt(numericPart);
+            }
+
+            if (adId == -1) {
+                throw new Exception("Could not parse Ad ID from order info: " + orderInfo);
+            }
+
+            if ("00".equals(vnp_ResponseCode)) {
+                logger.info("Payment successful for Ad ID: {}", adId);
+                AdRequest adRequest = new AdRequest();
+                adRequest.setStatus(AccountStatus.ACTIVE);
+                adRequest.setPaymentStatus(PaymentStatus.SUCCESS);
+                adService.update(adId, adRequest);
+
+                String redirectUrl = String.format("%s?vnp_ResponseCode=00&vnp_OrderInfo=%s",
+                        frontendReturnUrl, URLEncoder.encode(orderInfo, StandardCharsets.UTF_8));
+                response.sendRedirect(redirectUrl);
+            } else {
+                logger.warn("Payment failed for Ad ID: {} with response code: {}", adId, vnp_ResponseCode);
+                AdRequest adRequest = new AdRequest();
+                adRequest.setPaymentStatus(PaymentStatus.FAILED);
+                adService.update(adId, adRequest);
+
+                String redirectUrl = String.format("%s?vnp_ResponseCode=%s&vnp_OrderInfo=%s",
+                        frontendReturnUrl, vnp_ResponseCode, URLEncoder.encode(orderInfo, StandardCharsets.UTF_8));
+                response.sendRedirect(redirectUrl);
+            }
         } catch (Exception e) {
-            // Xử lý lỗi nếu không tìm thấy adId
-            response.sendRedirect("http://localhost:3000/payment-return?vnp_ResponseCode=99&error=invalid_order");
-            return;
-        }
-
-        // URL của trang kết quả trên Frontend
-        String frontendReturnUrl = "http://localhost:3000/payment-return";
-
-        if ("00".equals(vnp_ResponseCode)) {
-            // Thanh toán thành công -> Cập nhật trạng thái quảng cáo
-            AdRequest adRequest = new AdRequest();
-            adRequest.setStatus(AccountStatus.ACTIVE);
-            adRequest.setPaymentStatus(PaymentStatus.SUCCESS);
-            adService.update(adId, adRequest);
-
-            // Redirect về trang thành công của Frontend
-            String redirectUrl = String.format("%s?vnp_ResponseCode=00&vnp_OrderInfo=%s",
-                    frontendReturnUrl, URLEncoder.encode(orderInfo, StandardCharsets.UTF_8));
-            response.sendRedirect(redirectUrl);
-        } else {
-            // Thanh toán thất bại -> Cập nhật trạng thái
-            AdRequest adRequest = new AdRequest();
-            adRequest.setPaymentStatus(PaymentStatus.FAILED);
-            adService.update(adId, adRequest);
-
-            // Redirect về trang thất bại của Frontend
-            String redirectUrl = String.format("%s?vnp_ResponseCode=%s&vnp_OrderInfo=%s",
-                    frontendReturnUrl, vnp_ResponseCode, URLEncoder.encode(orderInfo, StandardCharsets.UTF_8));
-            response.sendRedirect(redirectUrl);
+            logger.error("Error processing VNPAY return: ", e);
+            // Bất kể lỗi gì, cũng redirect về frontend
+            response.sendRedirect(frontendReturnUrl + "?vnp_ResponseCode=99&error=server_error");
         }
     }
 

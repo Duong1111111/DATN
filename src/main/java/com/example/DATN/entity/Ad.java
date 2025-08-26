@@ -2,6 +2,7 @@ package com.example.DATN.entity;
 
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.options.Action;
+import com.example.DATN.utils.enums.options.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,8 @@ public class Ad {
     )
     @Column(name = "action")
     private List<Action> actions = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;

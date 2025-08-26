@@ -1,6 +1,7 @@
 package com.example.DATN.dto.response;
 
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.example.DATN.utils.enums.options.PaymentStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class AdResponse {
     private String description;
     private List<String> actions;
     private Double budget;
+    private PaymentStatus paymentStatus;
     private List<String> categories;
     private AccountStatus status;
     private LocalDateTime createdAt;

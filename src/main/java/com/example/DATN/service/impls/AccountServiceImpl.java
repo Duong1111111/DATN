@@ -102,7 +102,6 @@ public class AccountServiceImpl implements AccountService {
         account.setUpdatedAt(LocalDateTime.now());
 
         User user = new User();
-        user.setHobby(request.getHobby());
         user.setAccount(account);
         account.setUser(user);
 
@@ -152,8 +151,18 @@ public class AccountServiceImpl implements AccountService {
         if (request.getEmail() != null) {
             account.setEmail(request.getEmail());
         }
-        if (request.getHobby() != null) {
-            account.getUser().setHobby(request.getHobby());
+        User user = account.getUser();
+        if (request.getTravelStyles() != null) {
+            user.setTravelStyles(request.getTravelStyles());
+        }
+        if (request.getInterests() != null) {
+            user.setInterests(request.getInterests());
+        }
+        if (request.getBudget() != null) {
+            user.setBudget(request.getBudget());
+        }
+        if (request.getCompanions() != null) {
+            user.setCompanions(request.getCompanions());
         }
         account.setUpdatedAt(LocalDateTime.now());
         return toUserResponse(accountRepository.save(account));
@@ -332,7 +341,10 @@ public class AccountServiceImpl implements AccountService {
         response.setUpdatedAt(account.getUpdatedAt());
 
         if (account.getUser() != null) {
-            response.setHobby(account.getUser().getHobby());
+            response.setTravelStyles(account.getUser().getTravelStyles());
+            response.setInterests(account.getUser().getInterests());
+            response.setBudget(account.getUser().getBudget());
+            response.setCompanions(account.getUser().getCompanions());
         }
 
         return response;

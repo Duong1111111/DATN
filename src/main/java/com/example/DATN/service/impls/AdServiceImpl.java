@@ -116,10 +116,19 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdResponse update(Integer id, AdRequest request) {
-        Ad ad = adRepo.findById(id).orElseThrow();
+        Ad ad = adRepo.findById(id).orElseThrow(() -> new RuntimeException("Ad not found with id: " + id));
+
+        // --- BẮT ĐẦU THAY ĐỔI ---
+        if (request.getStatus() != null) {
+            ad.setStatus(request.getStatus());
+        }
+        // Thêm logic cập nhật PaymentStatus
+        if (request.getPaymentStatus() != null) {
+            // Giả sử bạn đã thêm trường paymentStatus vào entity Ad
+             ad.setPaymentStatus(request.getPaymentStatus());
+        }
         if (request.getStartDate() != null) ad.setStartDate(request.getStartDate());
         if (request.getEndDate() != null) ad.setEndDate(request.getEndDate());
-        if (request.getStatus() != null) ad.setStatus(request.getStatus());
         if (request.getLocationId() != null) {
             ad.setLocation(locationRepo.findById(request.getLocationId())
                     .orElseThrow(() -> new RuntimeException("Location not found")));
