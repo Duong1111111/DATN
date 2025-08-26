@@ -14,7 +14,7 @@ import java.util.List;
 public class AdRequest {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-//    private Double budget;
+    private Double budget;
     private String title;
     private String description;
     private List<Action> actions;

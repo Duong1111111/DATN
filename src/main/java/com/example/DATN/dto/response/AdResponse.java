@@ -1,7 +1,6 @@
 package com.example.DATN.dto.response;
 
 import com.example.DATN.utils.enums.options.AccountStatus;
-import com.example.DATN.utils.enums.options.Action;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -44,7 +44,7 @@ public class AdServiceImpl implements AdService {
         ad.setTitle(request.getTitle());
         ad.setDescription(request.getDescription());
         ad.setActions(request.getActions());
-        ad.setBudget(1_500_000d);
+        ad.setBudget(request.getBudget());
         ad.setStartDate(request.getStartDate());
         ad.setEndDate(request.getEndDate());
         ad.setStatus(AccountStatus.PENDING);

@@ -33,7 +33,7 @@ public class Ad {
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private Double budget = 1_500_000d;
+    private Double budget;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
     private LocalDateTime createdAt;
