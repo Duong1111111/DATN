@@ -60,4 +60,10 @@ public class ReviewController {
         reviewService.delete(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+    @GetMapping("/average/{locationId}")
+    public ResponseEntity<Double> getAverageRating(@PathVariable Integer locationId) {
+        Double avgRating = reviewService.getAverageRatingByLocationId(locationId);
+        return ResponseEntity.ok(avgRating);
+    }
 }

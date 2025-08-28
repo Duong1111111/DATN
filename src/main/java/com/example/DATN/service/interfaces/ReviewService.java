@@ -20,4 +20,6 @@ public interface ReviewService {
     void delete(Integer reviewId);
 
     ReviewResponse getById(Integer reviewId);
+
+    Double getAverageRatingByLocationId(Integer locationId);
 }

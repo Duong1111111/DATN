@@ -205,6 +205,12 @@ public class ReviewServiceImpl implements ReviewService {
         return toResponse(r);
     }
 
+    @Override
+    public Double getAverageRatingByLocationId(Integer locationId) {
+        Double avg = reviewRepository.findAverageRatingByLocationId(locationId);
+        return avg != null ? avg : 0.0;
+    }
+
     private ReviewResponse toResponse(Review review) {
         ReviewResponse res = new ReviewResponse();
         res.setReviewId(review.getReviewId());
