@@ -41,8 +41,10 @@ public class AuthServiceImpl implements AuthService {
         );
 
         String token = jwtTokenProvider.generateTokenByUserName(request.getUsername());
+        // lấy role từ account
+        String role = account.getRole().name();
 
-        return new JwtResponse(token);
+        return new JwtResponse(token, role, account.getUserId(), account.getUsername());
     }
 
     @Override

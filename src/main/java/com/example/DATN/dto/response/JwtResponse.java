@@ -8,5 +8,14 @@ import lombok.Setter;
 @Setter
 public class JwtResponse {
     private String token;
-    public JwtResponse(String token) { this.token = token; }
+    private String role;
+    private Integer userId;
+    private String username;
+
+    public JwtResponse(String token, String role, Integer userId, String username) {
+        this.token = token;
+        this.role = role;
+        this.userId = userId;
+        this.username = username;
+    }
 }
