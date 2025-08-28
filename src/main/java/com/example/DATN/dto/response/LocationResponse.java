@@ -20,7 +20,7 @@ public class LocationResponse {
     private LocalTime closeTime;
     private List<String> images;
     private String website;
-    private Integer phoneNumber;
+    private String phoneNumber;
     private AccountStatus status;
     private List<String> categoryNames;
     private String createdByUsername;

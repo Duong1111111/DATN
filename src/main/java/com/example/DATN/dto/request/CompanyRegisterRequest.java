@@ -12,5 +12,5 @@ public class CompanyRegisterRequest {
     private String companyName;
     private String taxCode;
     private String location;
-    private Integer phoneNumber;
+    private String phoneNumber;
 }

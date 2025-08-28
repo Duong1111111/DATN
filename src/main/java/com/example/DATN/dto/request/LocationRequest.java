@@ -20,7 +20,7 @@ public class LocationRequest {
     private LocalTime openTime;
     private LocalTime closeTime;
     private String website;
-    private Integer phoneNumber;
+    private String phoneNumber;
     private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

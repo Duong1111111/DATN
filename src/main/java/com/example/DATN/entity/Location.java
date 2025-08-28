@@ -28,7 +28,7 @@ public class Location {
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
     private List<LocationImage> images = new ArrayList<>();
     private String website;
-    private Integer phoneNumber;
+    private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 

@@ -15,7 +15,7 @@ public class Company {
     private String companyName;
     private String taxCode;
     private String location;
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     @OneToOne
     @MapsId
