@@ -3,10 +3,12 @@ package com.example.DATN.service.impls;
 import com.example.DATN.dto.request.LoginRequest;
 import com.example.DATN.dto.response.JwtResponse;
 import com.example.DATN.entity.Account;
+import com.example.DATN.exception.BusinessException;
 import com.example.DATN.repository.AccountRepository;
 import com.example.DATN.service.interfaces.AuthService;
 import com.example.DATN.utils.components.JwtTokenProvider;
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,16 +32,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse login(LoginRequest request) {
         Account account = accountRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Tài khoản không tồn tại"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if (account.getStatus() != AccountStatus.ACTIVE) {
-            throw new IllegalArgumentException("Tài khoản chưa được kích hoạt hoặc đã bị khóa");
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_ACTIVE);
         }
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
         String token = jwtTokenProvider.generateTokenByUserName(request.getUsername());
         // lấy role từ account
         String role = account.getRole().name();

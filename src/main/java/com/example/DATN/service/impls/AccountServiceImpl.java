@@ -260,7 +260,7 @@ public class AccountServiceImpl implements AccountService {
             account.setUpdatedAt(LocalDateTime.now());
             accountRepository.save(account);
         } else {
-            throw new RuntimeException("Only pending company accounts can be rejected");
+            throw new BusinessException(ErrorCode.ONLY_PENDING_COMPANYRE);
         }
 
         return toResponse(account);
@@ -270,10 +270,10 @@ public class AccountServiceImpl implements AccountService {
     public UserResponse getCurrentUser() {
         String username = getCurrentUsername();
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (account.getRole() != Role.USER) {
-            throw new RuntimeException("Account is not a user");
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_USER);
         }
 
         return toUserResponse(account);
@@ -283,10 +283,10 @@ public class AccountServiceImpl implements AccountService {
     public CompanyResponse getCurrentCompany() {
         String username = getCurrentUsername();
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (account.getRole() != Role.COMPANY) {
-            throw new RuntimeException("Account is not a company");
+            throw new BusinessException(ErrorCode.ACCOUNT_NOT_COMPANY);
         }
 
         return toCompanyResponse(account);
@@ -295,7 +295,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse getCurrentAccount() {
         String username = getCurrentUsername();
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
         return toResponse(account);
     }
 

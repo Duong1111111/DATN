@@ -2,6 +2,7 @@ package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
+import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Category;
 import com.example.DATN.entity.Location;
 import com.example.DATN.entity.LocationImage;
@@ -15,6 +16,8 @@ import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -194,12 +197,26 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<LocationResponse> getLocationsByUserIdDefault() {
-        Integer defaultUserId = 2;
-        List<Location> locations = locationRepository.findLocationsNotAdvertised(defaultUserId);
+        Integer userId = getCurrentUserId();
+        List<Location> locations = locationRepository.findLocationsNotAdvertised(userId);
 
         return locations.stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    private String getCurrentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("No authenticated user found");
+        }
+        return auth.getName();
+    }
+    private Integer getCurrentUserId() {
+        String username = getCurrentUsername();
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        return account.getUserId();
     }
 
 

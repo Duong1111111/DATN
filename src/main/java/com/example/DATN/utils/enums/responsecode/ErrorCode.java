@@ -7,7 +7,10 @@ public enum ErrorCode implements ResponseCode{
     ACCOUNT_NOT_USER(1004,"Account is not a user"),
     ACCOUNT_NOT_COMPANY(1005,"Account is not a company"),
     ONLY_PENDING_COMPANY(1006,"Only pending company accounts can be approved"),
-    LOCATION_NOT_FOUND(1007,"location not found"),
+    ONLY_PENDING_COMPANYRE(1007,"Only pending company accounts can be rejected"),
+    LOCATION_NOT_FOUND(1008,"location not found"),
+    ACCOUNT_NOT_ACTIVE(1009, "Tài khoản chưa được kích hoạt hoặc đã bị khóa"),
+    INVALID_CREDENTIALS(1010, "Sai tên đăng nhập hoặc mật khẩu"),
     INVALID_TOKEN(2001, "Token không hợp lệ"),
     EXPIRED_TOKEN(2002, "Hết phiên đăng nhập");
 
