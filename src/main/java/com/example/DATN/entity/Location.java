@@ -53,5 +53,7 @@ public class Location {
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites;
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ad> ads = new ArrayList<>();
 
 }

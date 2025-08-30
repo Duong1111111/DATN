@@ -59,4 +59,9 @@ public class AdController {
     public void delete(@PathVariable Integer id) {
         adService.delete(id);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<AdResponse>> getMyAds() {
+        return ResponseEntity.ok(adService.getMyAds());
+    }
 }

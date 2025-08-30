@@ -92,6 +92,9 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public UserResponse registerUser(UserRegisterRequest request) {
+        if (accountRepository.existsByUsername(request.getUsername())) {
+            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
         Account account = new Account();
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -112,6 +115,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public CompanyResponse registerCompany(CompanyRegisterRequest request) {
+        if (accountRepository.existsByUsername(request.getUsername())) {
+            throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
         Account account = new Account();
         account.setUsername(request.getUsername());
         account.setPassword(passwordEncoder.encode(request.getPassword()));

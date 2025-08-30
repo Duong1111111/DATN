@@ -19,4 +19,6 @@ public interface AdService {
     void delete(Integer id);
 
     AdResponse getById(Integer id);
+
+    List<AdResponse> getMyAds();
 }

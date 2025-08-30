@@ -2,15 +2,19 @@ package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.request.AdRequest;
 import com.example.DATN.dto.response.AdResponse;
+import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Ad;
 import com.example.DATN.entity.Category;
 import com.example.DATN.entity.Location;
+import com.example.DATN.exception.BusinessException;
 import com.example.DATN.repository.*;
 import com.example.DATN.service.interfaces.AdService;
 import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
-import com.example.DATN.utils.enums.options.PaymentStatus;
+import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -118,7 +122,6 @@ public class AdServiceImpl implements AdService {
     public AdResponse update(Integer id, AdRequest request) {
         Ad ad = adRepo.findById(id).orElseThrow(() -> new RuntimeException("Ad not found with id: " + id));
 
-        // --- BẮT ĐẦU THAY ĐỔI ---
         if (request.getStatus() != null) {
             ad.setStatus(request.getStatus());
         }
@@ -148,7 +151,27 @@ public class AdServiceImpl implements AdService {
         return toResponse(ad);
     }
 
+    @Override
+    public List<AdResponse> getMyAds() {
+        String username = getCurrentUsername();
+        Account account = accountRepo.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        List<Ad> ads = adRepo.findByCreatedBy(account);
+
+        return ads.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    private String getCurrentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("No authenticated user found");
+        }
+        return auth.getName();
+    }
     private AdResponse toResponse(Ad ad) {
         AdResponse res = new AdResponse();
         res.setAdId(ad.getAdId());
