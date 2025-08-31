@@ -1,6 +1,7 @@
 steps:
+  # 1. Build Docker image từ Dockerfile
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/gen-lang-client-0154921035/travelsuggest-repo/travelsuggest-backend:latest', '.']
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA', '.']
 
   # 2. Đẩy image lên Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -9,6 +10,7 @@ steps:
   # 3. Deploy image lên Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
+    serviceAccount: 'projects/${PROJECT_ID}/serviceAccounts/cloud-build-deployer@${PROJECT_ID}.iam.gserviceaccount.com'
     args:
       - 'run'
       - 'deploy'
@@ -28,4 +30,4 @@ substitutions:
   _DB_CONNECTION_NAME: 'gen-lang-client-0154921035:asia-southeast1:travelsuggest-db'
 
 images:
-  - 'asia-southeast1-docker.pkg.dev/gen-lang-client-0154921035/travelsuggest-repo/travelsuggest-backend:latest'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
