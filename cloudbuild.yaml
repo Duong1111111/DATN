@@ -10,8 +10,6 @@ steps:
   # 3. Deploy image lên Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
-    # Dòng này chỉ định tài khoản dịch vụ để thực hiện deploy
-    serviceAccount: 'projects/${PROJECT_ID}/serviceAccounts/cloud-build-deployer@${PROJECT_ID}.iam.gserviceaccount.com'
     args:
       - 'run'
       - 'deploy'
