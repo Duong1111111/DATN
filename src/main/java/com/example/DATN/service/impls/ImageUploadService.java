@@ -29,6 +29,11 @@ public class ImageUploadService {
         }
     }
 
+//    // Nếu bạn có constructor khác để inject Storage bean từ @Configuration, thì giữ nguyên
+//    public ImageUploadService(Storage storage) throws IOException {
+//        this.storage = storage;
+//    }
+
     public String uploadImage(MultipartFile file, String folderPath) throws IOException {
         String fileName = folderPath + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 

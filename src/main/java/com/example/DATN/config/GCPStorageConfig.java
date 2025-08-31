@@ -27,4 +27,14 @@ public class GCPStorageConfig {
                 .getService();
     }
 
+//    @Bean
+//    public Storage storage() throws IOException {
+//        // Khi chạy trên Cloud Run, GoogleCredentials.getApplicationDefault() sẽ tự động được sử dụng
+//        // Bạn không cần cung cấp file key nữa.
+//        return StorageOptions.newBuilder()
+//                .setProjectId(projectId)
+//                .build()
+//                .getService();
+//    }
+
 }

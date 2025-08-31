@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
     private final NotificationRepository notificationRepository;
 
 
-    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil, TimeAgoUtil timeAgoUtil1, NotificationRepository notificationRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil1, NotificationRepository notificationRepository) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.timeAgoUtil = timeAgoUtil1;

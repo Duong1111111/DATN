@@ -1,0 +1,35 @@
+steps:
+  # 1. Build Docker image từ Dockerfile
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA', '.']
+
+  # 2. Đẩy image lên Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA']
+
+  # 3. Deploy image lên Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}' # Tên service Cloud Run
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated' # Cho phép truy cập công khai
+      - '--add-cloudsql-instances=${_DB_CONNECTION_NAME}' # Kết nối với Cloud SQL
+      # Lấy các biến môi trường từ Secret Manager
+      - '--update-secrets= _DB_PASSWORD=db-password:latest, _JWT_SECRET=jwt-secret:latest'
+      # Các biến môi trường khác
+      - '--set-env-vars= _DB_CONNECTION_NAME=${_DB_CONNECTION_NAME}, _PROJECT_ID=${PROJECT_ID}'
+
+# Khai báo các biến sẽ được sử dụng trong các bước trên
+substitutions:
+  _SERVICE_NAME: 'travelsuggest-backend'
+  _REPO_NAME: 'travelsuggest-repo' # Phải khớp với tên repo Artifact Registry
+  _REGION: 'asia-southeast1'      # Thay bằng region của bạn
+  _DB_CONNECTION_NAME: 'your-project-id:your-region:travelsuggest-db' # THAY BẰNG INSTANCE CONNECTION NAME CỦA BẠN
+
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA'
