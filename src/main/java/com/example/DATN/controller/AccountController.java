@@ -34,6 +34,11 @@ public class AccountController {
         return accountService.createAccount(request);
     }
 
+    @GetMapping("/staff")
+    public List<AccountResponse> getAllStaffAccounts() {
+        return accountService.getAllStaffAccounts();
+    }
+
     @PutMapping("/{id}")
     public AccountResponse updateAccount(@PathVariable Integer id, @RequestBody AccountRequest request) {
         return accountService.updateAccount(id, request);

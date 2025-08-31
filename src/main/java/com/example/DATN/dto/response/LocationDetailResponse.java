@@ -25,6 +25,8 @@ public class LocationDetailResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String createdBy;
+    private Double latitude;
+    private Double longitude;
 
     private List<String> categories;
     private Double averageRating;

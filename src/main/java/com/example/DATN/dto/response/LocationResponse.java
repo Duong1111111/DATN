@@ -26,4 +26,6 @@ public class LocationResponse {
     private String createdByUsername;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Double latitude;
+    private Double longitude;
 }

@@ -25,6 +25,9 @@ public class LocationRequest {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private Double latitude;
+    private Double longitude;
+
     // Danh sách ID ảnh cần xóa (nếu có)
     private List<Integer> imagesToDelete;
 }

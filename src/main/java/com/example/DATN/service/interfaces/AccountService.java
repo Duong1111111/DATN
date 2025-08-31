@@ -13,6 +13,8 @@ public interface AccountService {
 
     List<AccountResponse> getAllAccounts();
 
+    List<AccountResponse> getAllStaffAccounts();
+
     AccountResponse createAccount(AccountRequest request);
 
     AccountResponse updateAccount(Integer id, AccountRequest request);

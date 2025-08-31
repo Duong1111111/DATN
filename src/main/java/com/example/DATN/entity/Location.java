@@ -35,6 +35,9 @@ public class Location {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private Double latitude;   // Vĩ độ
+    private Double longitude;  // Kinh độ
+
     @ManyToOne
     @JoinColumn(name = "created_by")
     private Account createdBy;

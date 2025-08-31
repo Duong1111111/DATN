@@ -68,6 +68,8 @@ public class LocationServiceImpl implements LocationService {
         location.setStatus(AccountStatus.PENDING);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
+        location.setLatitude(request.getLatitude());
+        location.setLongitude(request.getLongitude());
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
         if (categories.isEmpty()) {
             throw new RuntimeException("Categories not found");
@@ -118,6 +120,8 @@ public class LocationServiceImpl implements LocationService {
         location.setStatus(AccountStatus.ACTIVE);
         location.setCreatedAt(LocalDateTime.now());
         location.setUpdatedAt(LocalDateTime.now());
+        location.setLatitude(request.getLatitude());
+        location.setLongitude(request.getLongitude());
         List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
         if (categories.isEmpty()) {
             throw new RuntimeException("Categories not found");
@@ -232,6 +236,8 @@ public class LocationServiceImpl implements LocationService {
         if (request.getPhoneNumber() != null) location.setPhoneNumber(request.getPhoneNumber());
         if (request.getWebsite() != null) location.setWebsite(request.getWebsite());
         if (request.getStatus() != null) location.setStatus(request.getStatus());
+        if (request.getLatitude() != null) location.setLatitude(request.getLatitude());
+        if (request.getLongitude() != null) location.setLongitude(request.getLongitude());
         if (request.getCategoryIds() != null) {
             List<Category> categories = categoryRepository.findAllById(request.getCategoryIds());
             location.getCategories().clear();
@@ -339,6 +345,8 @@ public class LocationServiceImpl implements LocationService {
                         .collect(Collectors.toList())
         );
         res.setCreatedByUsername(l.getCreatedBy().getUsername());
+        res.setLatitude(l.getLatitude());
+        res.setLongitude(l.getLongitude());
         return res;
     }
 }

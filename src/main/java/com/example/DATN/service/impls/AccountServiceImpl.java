@@ -50,6 +50,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public List<AccountResponse> getAllStaffAccounts() {
+        return accountRepository.findAll()
+                .stream()
+                .filter(acc -> acc.getRole() == Role.STAFF) // lọc theo role
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
     public AccountResponse createAccount(AccountRequest request) {
         if (accountRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException(ErrorCode.USERNAME_ALREADY_EXISTS);
