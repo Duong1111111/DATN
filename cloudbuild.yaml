@@ -10,6 +10,7 @@ steps:
   # 3. Deploy image lên Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
+    serviceAccount: 'projects/${PROJECT_ID}/serviceAccounts/cloud-build-deployer@${PROJECT_ID}.iam.gserviceaccount.com'
     args:
       - 'run'
       - 'deploy'
