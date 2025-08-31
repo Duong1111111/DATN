@@ -1,7 +1,6 @@
 steps:
-  # 1. Build Docker image từ Dockerfile
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA', '.']
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/gen-lang-client-0154921035/travelsuggest-repo/travelsuggest-backend:latest', '.']
 
   # 2. Đẩy image lên Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -29,4 +28,4 @@ substitutions:
   _DB_CONNECTION_NAME: 'gen-lang-client-0154921035:asia-southeast1:travelsuggest-db'
 
 images:
-  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
+  - 'asia-southeast1-docker.pkg.dev/gen-lang-client-0154921035/travelsuggest-repo/travelsuggest-backend:latest'
