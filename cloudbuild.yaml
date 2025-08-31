@@ -1,37 +1,33 @@
 steps:
   # 1. Build Docker image từ Dockerfile
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA', '.']
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA', '.']
 
   # 2. Đẩy image lên Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA']
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA']
 
   # 3. Deploy image lên Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
+    serviceAccount: 'projects/${PROJECT_ID}/serviceAccounts/cloud-build-deployer@${PROJECT_ID}.iam.gserviceaccount.com'
     args:
       - 'run'
       - 'deploy'
-      - '${_SERVICE_NAME}' # Tên service Cloud Run
-      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA'
+      - '${_SERVICE_NAME}'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
       - '--region=${_REGION}'
       - '--platform=managed'
-      - '--allow-unauthenticated' # Cho phép truy cập công khai
-      - '--add-cloudsql-instances=${_DB_CONNECTION_NAME}' # Kết nối với Cloud SQL
-      # Lấy các biến môi trường từ Secret Manager
+      - '--allow-unauthenticated'
+      - '--add-cloudsql-instances=${_DB_CONNECTION_NAME}'
       - '--update-secrets=_DB_PASSWORD=db-password:latest,_JWT_SECRET=jwt-secret:latest'
-      # Các biến môi trường khác
       - '--set-env-vars=_DB_CONNECTION_NAME=${_DB_CONNECTION_NAME},_PROJECT_ID=${PROJECT_ID}'
 
-# Khai báo các biến sẽ được sử dụng trong các bước trên
 substitutions:
   _SERVICE_NAME: 'travelsuggest-backend'
-  _REPO_NAME: 'travelsuggest-repo' # Phải khớp với tên repo Artifact Registry
-  _REGION: 'asia-southeast1'      # Thay bằng region của bạn
-  # !!! QUAN TRỌNG: Đảm bảo bạn đã thay thế dòng này bằng "Instance connection name" của bạn
+  _REPO_NAME: 'travelsuggest-repo'
+  _REGION: 'asia-southeast1'
   _DB_CONNECTION_NAME: 'gen-lang-client-0154921035:asia-southeast1:travelsuggest-db'
 
-# Khai báo image sẽ được tạo ra
 images:
-  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$SHORT_SHA'
