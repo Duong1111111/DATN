@@ -29,7 +29,7 @@ substitutions:
   _SERVICE_NAME: 'travelsuggest-backend'
   _REPO_NAME: 'travelsuggest-repo' # Phải khớp với tên repo Artifact Registry
   _REGION: 'asia-southeast1'      # Thay bằng region của bạn
-  _DB_CONNECTION_NAME: 'your-project-id:your-region:travelsuggest-db' # THAY BẰNG INSTANCE CONNECTION NAME CỦA BẠN
+  _DB_CONNECTION_NAME: 'gen-lang-client-0154921035:asia-southeast1:travelsuggest-db' # THAY BẰNG INSTANCE CONNECTION NAME CỦA BẠN
 
 images:
   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}:$COMMIT_SHA'
