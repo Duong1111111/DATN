@@ -17,4 +17,5 @@ public class AccountResponse {
     private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String avatar;
 }

@@ -15,6 +15,7 @@ public class CompanyResponse {
     private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String avatar;
 
     // Company-specific fields
     private String companyName;

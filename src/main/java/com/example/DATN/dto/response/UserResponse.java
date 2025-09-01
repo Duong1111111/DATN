@@ -16,6 +16,7 @@ public class UserResponse {
     private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String avatar;
 
     private List<String> travelStyles;
     private List<String> interests;

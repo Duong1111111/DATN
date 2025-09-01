@@ -377,6 +377,7 @@ public class AccountServiceImpl implements AccountService {
         response.setRole(account.getRole());
         response.setCreatedAt(account.getCreatedAt());
         response.setUpdatedAt(account.getUpdatedAt());
+        response.setAvatar(account.getAvatar());
         response.setStatus(account.getStatus());
         return response;
     }
@@ -388,6 +389,7 @@ public class AccountServiceImpl implements AccountService {
         response.setStatus(account.getStatus());
         response.setCreatedAt(account.getCreatedAt());
         response.setUpdatedAt(account.getUpdatedAt());
+        response.setAvatar(account.getAvatar());
 
         if (account.getUser() != null) {
             response.setTravelStyles(account.getUser().getTravelStyles());
@@ -407,6 +409,7 @@ public class AccountServiceImpl implements AccountService {
         response.setStatus(account.getStatus());
         response.setCreatedAt(account.getCreatedAt());
         response.setUpdatedAt(account.getUpdatedAt());
+        response.setAvatar(account.getAvatar());
 
         if (account.getCompany() != null) {
             response.setCompanyName(account.getCompany().getCompanyName());
