@@ -16,6 +16,8 @@ import com.example.DATN.utils.components.TimeAgoUtil;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.options.Role;
 import com.example.DATN.utils.enums.responsecode.ErrorCode;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Storage;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,14 +37,16 @@ public class AccountServiceImpl implements AccountService {
     private final TimeAgoUtil timeAgoUtil;
     private final NotificationRepository notificationRepository;
     private final ImageUploadService imageUploadService;
+    private final Storage storage;
 
 
-    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil1, NotificationRepository notificationRepository, ImageUploadService imageUploadService) {
+    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil1, NotificationRepository notificationRepository, ImageUploadService imageUploadService, Storage storage) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.timeAgoUtil = timeAgoUtil1;
         this.notificationRepository = notificationRepository;
         this.imageUploadService = imageUploadService;
+        this.storage = storage;
     }
 
     @Override
@@ -224,12 +228,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public String updateAvatar(Integer accountId, MultipartFile file) throws IOException {
-        // Upload ảnh lên GCS
-        String avatarUrl = imageUploadService.uploadImage(file, "avatars");
-
         // Tìm account
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        // Nếu đã có avatar cũ thì xóa khỏi GCS
+        if (account.getAvatar() != null && !account.getAvatar().isEmpty()) {
+            String oldUrl = account.getAvatar();
+            String fileName = oldUrl.substring(oldUrl.indexOf("avatars/"));
+            // VD: avatars/uuid_filename.jpg
+            storage.delete(BlobId.of("travelsuggest", fileName));
+        }
+
+        // Upload ảnh mới lên GCS
+        String avatarUrl = imageUploadService.uploadImage(file, "avatars");
 
         // Cập nhật avatar
         account.setAvatar(avatarUrl);

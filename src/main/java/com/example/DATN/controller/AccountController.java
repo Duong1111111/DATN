@@ -114,7 +114,7 @@ public class AccountController {
         AccountResponse account = accountService.getCurrentAccount();
         return ResponseEntity.ok(account);
     }
-    @PostMapping("/{id}/avatar")
+    @PutMapping("/{id}/avatar")
     public ResponseEntity<String> uploadAvatar(
             @PathVariable Integer id,
             @RequestParam("file") MultipartFile file) throws IOException {
