@@ -18,20 +18,20 @@ public class ImageUploadService {
     private final Storage storage;
     private final String BUCKET_NAME = "travelsuggest";
 
-//    public ImageUploadService() throws IOException {
-//        try (FileInputStream serviceAccountStream =
-//                     new FileInputStream("E:/Lms/gen-lang-client-0154921035-b9cccfbfbca2.json")) {
-//
-//            this.storage = StorageOptions.newBuilder()
-//                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
-//                    .build()
-//                    .getService();
-//        }
-//    }
+    public ImageUploadService() throws IOException {
+        try (FileInputStream serviceAccountStream =
+                     new FileInputStream("E:/Lms/gen-lang-client-0154921035-b9cccfbfbca2.json")) {
 
-    public ImageUploadService(Storage storage) throws IOException {
-        this.storage = storage;
+            this.storage = StorageOptions.newBuilder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+                    .build()
+                    .getService();
+        }
     }
+//
+//    public ImageUploadService(Storage storage) throws IOException {
+//        this.storage = storage;
+//    }
 
     public String uploadImage(MultipartFile file, String folderPath) throws IOException {
         String fileName = folderPath + "/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();

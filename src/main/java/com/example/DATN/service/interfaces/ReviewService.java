@@ -22,4 +22,6 @@ public interface ReviewService {
     ReviewResponse getById(Integer reviewId);
 
     Double getAverageRatingByLocationId(Integer locationId);
+
+    List<ReviewResponse> getReviewsByLocation(Integer locationId);
 }

@@ -1,6 +1,7 @@
 package com.example.DATN.entity;
 
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +35,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "location_id")
+    @JsonBackReference
     private Location location;
 
 }

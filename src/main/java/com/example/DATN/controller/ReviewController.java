@@ -66,4 +66,9 @@ public class ReviewController {
         Double avgRating = reviewService.getAverageRatingByLocationId(locationId);
         return ResponseEntity.ok(avgRating);
     }
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<List<ReviewResponse>> getReviewsByLocation(
+            @PathVariable Integer locationId) {
+        return ResponseEntity.ok(reviewService.getReviewsByLocation(locationId));
+    }
 }

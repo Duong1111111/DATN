@@ -211,6 +211,27 @@ public class ReviewServiceImpl implements ReviewService {
         return avg != null ? avg : 0.0;
     }
 
+    @Override
+    public List<ReviewResponse> getReviewsByLocation(Integer locationId) {
+        List<Review> reviews = reviewRepository.findByLocation_LocationId(locationId);
+
+        return reviews.stream().map(r -> {
+            ReviewResponse dto = new ReviewResponse();
+            dto.setReviewId(r.getReviewId());
+            dto.setRating(r.getRating());
+            dto.setComment(r.getComment());
+            dto.setStatus(r.getStatus());
+            dto.setUsername(r.getUser().getUsername());
+            dto.setLocationName(r.getLocation().getName());
+            dto.setImages(r.getImages().stream()
+                    .map(ReviewImage::getImageUrl)
+                    .toList());
+            dto.setCreatedAt(r.getCreatedAt());
+            dto.setUpdatedAt(r.getUpdatedAt());
+            return dto;
+        }).toList();
+    }
+
     private ReviewResponse toResponse(Review review) {
         ReviewResponse res = new ReviewResponse();
         res.setReviewId(review.getReviewId());

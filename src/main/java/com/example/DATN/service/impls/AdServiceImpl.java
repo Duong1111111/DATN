@@ -59,7 +59,6 @@ public class AdServiceImpl implements AdService {
         ad.setCreatedBy(accountRepo.findById(request.getCreatedById()).orElseThrow());
 
         adRepo.save(ad);
-//        timeAgoUtil.notifyAdCreated(ad);
         AdResponse res = new AdResponse();
         res.setAdId(ad.getAdId());
         res.setTitle(ad.getTitle());

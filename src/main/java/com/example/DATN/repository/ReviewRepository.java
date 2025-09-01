@@ -21,4 +21,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     );
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.location.locationId = :locationId")
     Double findAverageRatingByLocationId(@Param("locationId") Integer locationId);
+    List<Review> findByLocation_LocationId(Integer locationId);
 }

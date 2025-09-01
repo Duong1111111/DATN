@@ -3,6 +3,7 @@ package com.example.DATN.entity;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.options.Action;
 import com.example.DATN.utils.enums.options.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,5 +57,6 @@ public class Ad {
     // Địa điểm được quảng cáo
     @ManyToOne
     @JoinColumn(name = "location_id")
+    @JsonBackReference
     private Location location;
 }

@@ -1,6 +1,8 @@
 package com.example.DATN.entity;
 
 import com.example.DATN.utils.enums.options.AccountStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,11 +54,13 @@ public class Location {
 
     // Relationships
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites;
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     private List<Ad> ads = new ArrayList<>();
 
 }
