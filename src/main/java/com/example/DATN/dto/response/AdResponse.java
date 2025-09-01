@@ -25,4 +25,9 @@ public class AdResponse {
     private LocalDateTime updatedAt;
     private String createdByUsername;
     private String locationName;
+    private Integer locationId; // ID để tạo link chi tiết
+    private String locationAddress; // Địa chỉ đầy đủ
+    private List<String> locationImages; // Danh sách ảnh của địa điểm
+    private Double averageRating; // Rating trung bình
+    private Integer totalReviews; // Tổng số lượt đánh giá
 }

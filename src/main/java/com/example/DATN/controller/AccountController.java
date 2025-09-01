@@ -11,7 +11,9 @@ import com.example.DATN.utils.enums.responsecode.BaseResponse;
 import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -111,5 +113,13 @@ public class AccountController {
     public ResponseEntity<AccountResponse> getCurrentAccount() {
         AccountResponse account = accountService.getCurrentAccount();
         return ResponseEntity.ok(account);
+    }
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<String> uploadAvatar(
+            @PathVariable Integer id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        String avatarUrl = accountService.updateAvatar(id, file);
+        return ResponseEntity.ok(avatarUrl);
     }
 }

@@ -26,6 +26,8 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
+    private String avatar;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

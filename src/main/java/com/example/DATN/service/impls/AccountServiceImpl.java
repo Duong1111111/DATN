@@ -20,7 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,13 +34,15 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final TimeAgoUtil timeAgoUtil;
     private final NotificationRepository notificationRepository;
+    private final ImageUploadService imageUploadService;
 
 
-    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil1, NotificationRepository notificationRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, PasswordEncoder passwordEncoder, TimeAgoUtil timeAgoUtil1, NotificationRepository notificationRepository, ImageUploadService imageUploadService) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.timeAgoUtil = timeAgoUtil1;
         this.notificationRepository = notificationRepository;
+        this.imageUploadService = imageUploadService;
     }
 
     @Override
@@ -216,6 +220,23 @@ public class AccountServiceImpl implements AccountService {
         account.setUpdatedAt(LocalDateTime.now());
 
         return toCompanyResponse(accountRepository.save(account));
+    }
+
+    @Override
+    public String updateAvatar(Integer accountId, MultipartFile file) throws IOException {
+        // Upload ảnh lên GCS
+        String avatarUrl = imageUploadService.uploadImage(file, "avatars");
+
+        // Tìm account
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        // Cập nhật avatar
+        account.setAvatar(avatarUrl);
+        account.setUpdatedAt(LocalDateTime.now());
+        accountRepository.save(account);
+
+        return avatarUrl;
     }
 
 

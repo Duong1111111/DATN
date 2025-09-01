@@ -2,10 +2,7 @@ package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.request.AdRequest;
 import com.example.DATN.dto.response.AdResponse;
-import com.example.DATN.entity.Account;
-import com.example.DATN.entity.Ad;
-import com.example.DATN.entity.Category;
-import com.example.DATN.entity.Location;
+import com.example.DATN.entity.*;
 import com.example.DATN.exception.BusinessException;
 import com.example.DATN.repository.*;
 import com.example.DATN.service.interfaces.AdService;
@@ -29,6 +26,8 @@ public class AdServiceImpl implements AdService {
     @Autowired private LocationRepository locationRepo;
     @Autowired private CategoryRepository categoryRepository;
     private final TimeAgoUtil timeAgoUtil;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     public AdServiceImpl(TimeAgoUtil timeAgoUtil) {
         this.timeAgoUtil = timeAgoUtil;
@@ -181,7 +180,22 @@ public class AdServiceImpl implements AdService {
         res.setCreatedAt(ad.getCreatedAt());
         res.setUpdatedAt(ad.getUpdatedAt());
         res.setCreatedByUsername(ad.getCreatedBy().getUsername());
-        res.setLocationName(ad.getLocation().getName());
+        res.setTitle(ad.getTitle());
+        res.setActions(ad.getActions().stream().map(Enum::name).collect(Collectors.toList()));
+        if (ad.getLocation() != null) {
+            Location location = ad.getLocation();
+            res.setLocationId(location.getLocationId());
+            res.setLocationName(location.getName());
+            res.setLocationAddress(location.getLocation());
+            res.setLocationImages(
+                    location.getImages().stream()
+                            .map(LocationImage::getImageUrl)
+                            .collect(Collectors.toList())
+            );
+            Double avgRating = reviewRepository.findAverageRatingByLocationId(location.getLocationId());
+            res.setAverageRating(avgRating != null ? avgRating : 0.0);
+            res.setTotalReviews((int) reviewRepository.countByLocation_LocationId(location.getLocationId()));
+        }
         return res;
     }
 }
