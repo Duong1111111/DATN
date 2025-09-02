@@ -143,7 +143,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         if (existingFav.isPresent()) {
             // Nếu đã có -> xóa khỏi danh sách yêu thích
-            favoriteRepository.delete(existingFav.get());
+            favoriteRepository.deleteById(existingFav.get().getFavorId());
 
             FavoriteResponse res = new FavoriteResponse();
             res.setFavorId(existingFav.get().getFavorId());
