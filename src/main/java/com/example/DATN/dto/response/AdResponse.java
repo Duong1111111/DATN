@@ -30,4 +30,5 @@ public class AdResponse {
     private List<String> locationImages; // Danh sách ảnh của địa điểm
     private Double averageRating; // Rating trung bình
     private Integer totalReviews; // Tổng số lượt đánh giá
+    private String locationPhoneNumber;
 }

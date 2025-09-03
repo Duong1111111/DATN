@@ -188,13 +188,35 @@ public class FavoriteServiceImpl implements FavoriteService {
             FavoriteResponse res = new FavoriteResponse();
             res.setFavorId(fav.getFavorId());
             res.setUsername(user.getUsername());
-            res.setLocationName(fav.getLocation().getName());
+
+            Location loc = fav.getLocation();
+            res.setLocationId(loc.getLocationId());
+            res.setLocationName(loc.getName());
+            res.setAddress(loc.getLocation()); // field trong entity Location
             res.setStatus(fav.getStatus());
             res.setCreatedAt(fav.getCreatedAt());
             res.setUpdatedAt(fav.getUpdatedAt());
+
+            // Lấy ảnh đầu tiên (nếu có)
+            String imageUrl = loc.getImages() != null && !loc.getImages().isEmpty()
+                    ? loc.getImages().get(0).getImageUrl()
+                    : null;
+            res.setImage(imageUrl);
+
+            // Tính rating trung bình
+            Double avgRating = 0.0;
+            if (loc.getReviews() != null && !loc.getReviews().isEmpty()) {
+                avgRating = loc.getReviews().stream()
+                        .mapToInt(Review::getRating)
+                        .average()
+                        .orElse(0.0);
+            }
+            res.setAverageRating(avgRating);
+
             return res;
         }).toList();
     }
+
 
     @Override
     public LocationDetailResponse getFavoriteLocationDetail(Integer favorId) {
@@ -223,6 +245,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         res.setCategories(loc.getCategories() != null
                 ? loc.getCategories().stream().map(Category::getName).toList()
                 : List.of());
+        res.setLatitude(loc.getLatitude());
+        res.setLongitude(loc.getLongitude());
 
         // Tính rating
         if (loc.getReviews() != null && !loc.getReviews().isEmpty()) {

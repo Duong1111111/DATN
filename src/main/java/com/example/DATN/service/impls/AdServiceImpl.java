@@ -66,6 +66,8 @@ public class AdServiceImpl implements AdService {
                 .map(Enum::name)
                 .toList());
         res.setLocationName(location.getName());
+        res.setLocationAddress(location.getLocation());
+        res.setLocationPhoneNumber(location.getPhoneNumber());
         res.setCategories(categories.stream().map(Category::getName).toList());
         res.setStartDate(ad.getStartDate());
         res.setEndDate(ad.getEndDate());
@@ -187,6 +189,7 @@ public class AdServiceImpl implements AdService {
             res.setLocationId(location.getLocationId());
             res.setLocationName(location.getName());
             res.setLocationAddress(location.getLocation());
+            res.setLocationPhoneNumber(location.getPhoneNumber());
             res.setLocationImages(
                     location.getImages().stream()
                             .map(LocationImage::getImageUrl)

@@ -13,4 +13,8 @@ public class FavoriteResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean status;
+    private Integer locationId;
+    private String address;
+    private String image;
+    private Double averageRating;
 }
