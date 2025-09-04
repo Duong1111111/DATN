@@ -188,6 +188,12 @@ public class AccountServiceImpl implements AccountService {
         if (request.getCompanions() != null) {
             user.setCompanions(request.getCompanions());
         }
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getPhoneNumber() != null) {
+            user.setPhoneNumber(request.getPhoneNumber());
+        }
         account.setUpdatedAt(LocalDateTime.now());
         return toUserResponse(accountRepository.save(account));
     }
@@ -396,6 +402,8 @@ public class AccountServiceImpl implements AccountService {
             response.setInterests(account.getUser().getInterests());
             response.setBudget(account.getUser().getBudget());
             response.setCompanions(account.getUser().getCompanions());
+            response.setFullName(account.getUser().getFullName());
+            response.setPhoneNumber(account.getUser().getPhoneNumber());
         }
 
         return response;

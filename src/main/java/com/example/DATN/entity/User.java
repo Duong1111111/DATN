@@ -36,4 +36,10 @@ public class User {
     @MapsId
     @JoinColumn(name = "user_id")
     private Account account;
+
+    @Column(name = "full_name")
+    private String fullName; // Họ tên đầy đủ
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
 }

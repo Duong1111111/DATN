@@ -17,6 +17,8 @@ public class UserResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String avatar;
+    private String fullName;     // Họ tên đầy đủ
+    private String phoneNumber;
 
     private List<String> travelStyles;
     private List<String> interests;

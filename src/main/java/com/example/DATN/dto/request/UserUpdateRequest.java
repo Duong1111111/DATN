@@ -15,4 +15,6 @@ public class UserUpdateRequest {
     private List<String> interests;
     private String budget;
     private List<String> companions;
+    private String fullName;     // Họ tên đầy đủ
+    private String phoneNumber;
 }
