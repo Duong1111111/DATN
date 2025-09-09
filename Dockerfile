@@ -1,22 +1,27 @@
-# Sử dụng base image có Java 17, phù hợp với pom.xml của bạn
-FROM openjdk:17-jdk-slim
-
-# Thiết lập thư mục làm việc bên trong container
+# --------- Stage 1: Build JAR ----------
+FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Sao chép file pom.xml và các file source vào container
-# Tách riêng để tận dụng cache của Docker, giúp build nhanh hơn
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+# Copy pom.xml và download dependencies trước để cache tốt hơn
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copy source code và build
 COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Chạy Maven để build ứng dụng và tạo ra file .jar
-# -DskipTests sẽ bỏ qua việc chạy test để build nhanh hơn
-RUN ./mvnw package -DskipTests
+# --------- Stage 2: Runtime ----------
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
 
-# Mở cổng 8080 (cổng mặc định trong application.properties của bạn)
+# Copy file jar từ stage build
+COPY --from=build /app/target/*.jar app.jar
+
+# Tạo entrypoint script: ghi GOOGLE_CREDENTIALS vào file
+RUN echo '#!/bin/sh' > /entrypoint.sh \
+    && echo 'echo "$GOOGLE_CREDENTIALS" > /app/credentials.json' >> /entrypoint.sh \
+    && echo 'exec java -jar app.jar' >> /entrypoint.sh \
+    && chmod +x /entrypoint.sh
+
 EXPOSE 8080
-
-# Lệnh để khởi chạy ứng dụng khi container bắt đầu
-# Thay thế 'DATN-0.0.1-SNAPSHOT.jar' nếu tên file jar của bạn khác
-ENTRYPOINT ["java", "-jar", "target/DATN-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["/entrypoint.sh"]

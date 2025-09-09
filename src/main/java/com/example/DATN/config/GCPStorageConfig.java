@@ -18,23 +18,22 @@ public class GCPStorageConfig {
     @Value("${gcp.project.id}")
     private String projectId;
 
+//    @Bean
+//    public Storage storage() throws IOException {
+//        return StorageOptions.newBuilder()
+//                .setProjectId("gen-lang-client-0154921035")
+//                .setCredentials(GoogleCredentials.fromStream(gcpKeyFile.getInputStream()))
+//                .build()
+//                .getService();
+//    }
+
     @Bean
     public Storage storage() throws IOException {
         return StorageOptions.newBuilder()
-                .setProjectId("gen-lang-client-0154921035")
+                .setProjectId(projectId)
                 .setCredentials(GoogleCredentials.fromStream(gcpKeyFile.getInputStream()))
                 .build()
                 .getService();
     }
-
-//    @Bean
-//    public Storage storage() throws IOException {
-//        // Khi chạy trên Cloud Run, Google Cloud sẽ tự động xác thực.
-//        // Đoạn code này sẽ hoạt động trên cả máy local và trên cloud.
-//        return StorageOptions.newBuilder()
-//                .setProjectId(projectId)
-//                .build()
-//                .getService();
-//    }
 
 }
