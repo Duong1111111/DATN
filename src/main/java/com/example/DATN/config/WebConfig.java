@@ -9,7 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://26.118.131.110:3000", "http://26.143.90.159:3000") // chỉ định domain FE
+                .allowedOrigins("http://localhost:3000", "http://26.118.131.110:3000", "http://26.143.90.159:3000", "https://travelsuggest-app-36bf8.web.app") // chỉ định domain FE
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true); // nếu có JWT/cookie
