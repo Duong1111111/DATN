@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface LocationRepository extends JpaRepository<Location, Integer> {
     List<Location> findAllByStatus(AccountStatus status);
     Optional<Location> findByLocationIdAndStatus(Integer locationId, AccountStatus status);
-    List<Location> findByCreatedByUserId(Integer userId);
+    @Query("SELECT l FROM Location l WHERE l.createdBy.id = :userId")
+    List<Location> findLocationsByUserId(@Param("userId") Integer userId);
     @Query("SELECT l FROM Location l " +
             "WHERE l.createdBy.userId = :userId " +
             "AND l.id NOT IN (SELECT a.location.id FROM Ad a WHERE a.location IS NOT NULL)")

@@ -202,7 +202,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LocationResponse> getLocationsByUserIdDefault() {
         Integer userId = getCurrentUserId();
-        List<Location> locations = locationRepository.findLocationsNotAdvertised(userId);
+        List<Location> locations = locationRepository.findLocationsByUserId(userId);
 
         return locations.stream()
                 .map(this::toResponse)
