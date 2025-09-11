@@ -209,6 +209,16 @@ public class LocationServiceImpl implements LocationService {
                 .toList();
     }
 
+    @Override
+    public List<LocationResponse> getLocationsByUserIdNoAds() {
+        Integer userId = getCurrentUserId();
+        List<Location> locations = locationRepository.findLocationsNotAdvertised(userId);
+
+        return locations.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private String getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {

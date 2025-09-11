@@ -31,6 +31,8 @@ public interface LocationService {
 
     List<LocationResponse> getLocationsByUserIdDefault();
 
+    List<LocationResponse> getLocationsByUserIdNoAds();
+
     LocationResponse update(Integer id, LocationRequest request, List<MultipartFile> imageFiles);
 
     void delete(Integer id);

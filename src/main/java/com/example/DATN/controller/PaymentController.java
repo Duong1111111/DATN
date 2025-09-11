@@ -99,8 +99,8 @@ public class PaymentController {
 
     @GetMapping("/vnpay-return")
     public void vnpayReturn(HttpServletResponse response, @RequestParam Map<String, String> params) throws IOException {
-        String frontendReturnUrl = "https://travelsuggest-app-36bf8.web.app/payment-return";
-//        String frontendReturnUrl = "http://26.112.109.171:3000/payment-return";
+//        String frontendReturnUrl = "https://travelsuggest-app-36bf8.web.app/payment-return";
+        String frontendReturnUrl = "http://26.112.109.171:3000/payment-return";
 
         try {
             String vnp_ResponseCode = params.get("vnp_ResponseCode");

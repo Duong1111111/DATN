@@ -99,6 +99,13 @@ public class LocationController {
         List<LocationResponse> locations = locationService.getLocationsByUserIdDefault();
         return ResponseEntity.ok(locations);
     }
+
+    @GetMapping("/me/company/ad")
+    public ResponseEntity<List<LocationResponse>> getLocationsByUserNoAd() {
+        List<LocationResponse> locations = locationService.getLocationsByUserIdNoAds();
+        return ResponseEntity.ok(locations);
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         locationService.delete(id);
