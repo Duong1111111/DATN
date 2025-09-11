@@ -53,8 +53,11 @@ public class PaymentController {
         vnp_Params.put("vnp_ReturnUrl", VnpayConfig.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+//        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
@@ -96,7 +99,8 @@ public class PaymentController {
 
     @GetMapping("/vnpay-return")
     public void vnpayReturn(HttpServletResponse response, @RequestParam Map<String, String> params) throws IOException {
-        String frontendReturnUrl = "http://26.112.109.171:3000/payment-return";
+        String frontendReturnUrl = "https://travelsuggest-app-36bf8.web.app/payment-return";
+//        String frontendReturnUrl = "http://26.112.109.171:3000/payment-return";
 
         try {
             String vnp_ResponseCode = params.get("vnp_ResponseCode");
