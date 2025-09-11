@@ -12,7 +12,7 @@ public class VnpayConfig {
 
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 //    public static String vnp_ReturnUrl = "http://26.118.131.110:8080/api/payment/vnpay-return";
-    public static String vnp_ReturnUrl = "https://travelsuggest-app-36bf8.web.app/api/payment/vnpay-return"; // URL trả về sau khi thanh toán
+    public static String vnp_ReturnUrl = "https://datn-0v3f.onrender.com/api/payment/vnpay-return"; // URL trả về sau khi thanh toán
     public static String vnp_TmnCode = "04UM55IG"; // Lấy từ tài khoản VNPAY
     public static String vnp_HashSecret = "6KS8MIUI5IHQOKH2IYPAH2RUVYT24AFW"; // Lấy từ tài khoản VNPAY
     public static String vnp_Version = "2.1.0";
