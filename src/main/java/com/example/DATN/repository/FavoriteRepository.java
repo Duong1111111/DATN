@@ -4,6 +4,8 @@ import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Favorite;
 import com.example.DATN.entity.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -20,5 +22,11 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     );
     Optional<Favorite> findByUserAndLocation(Account user, Location location);
     List<Favorite> findByUser(Account user);
+
+    @Query("SELECT EXTRACT(YEAR FROM f.createdAt), EXTRACT(MONTH FROM f.createdAt), COUNT(f) " +
+            "FROM Favorite f " +
+            "WHERE f.location.locationId = :locationId " +
+            "GROUP BY EXTRACT(YEAR FROM f.createdAt), EXTRACT(MONTH FROM f.createdAt)")
+    List<Object[]> countMonthlyFavoritesByLocation(@Param("locationId") Integer locationId);
 
 }

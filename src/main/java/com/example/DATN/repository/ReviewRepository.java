@@ -35,5 +35,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         """, nativeQuery = true)
     List<Object[]> countReviewGrowth(@Param("period") String period);
 
-    List<Review> findTop5ByLocation_LocationIdOrderByCreatedAtDesc(Integer locationId);
+    List<Review> findTop5ByLocation_LocationIdAndStatusOrderByCreatedAtDesc(Integer locationId, AccountStatus status);
 }
