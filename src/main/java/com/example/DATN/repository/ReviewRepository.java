@@ -20,8 +20,11 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             LocalDateTime from,
             LocalDateTime to
     );
-    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.location.locationId = :locationId")
+    @Query("SELECT AVG(r.rating) FROM Review r " +
+            "WHERE r.location.locationId = :locationId " +
+            "AND r.status = 'ACTIVE'")
     Double findAverageRatingByLocationId(@Param("locationId") Integer locationId);
+
     List<Review> findByLocation_LocationId(Integer locationId);
 
     @Query(value = """
