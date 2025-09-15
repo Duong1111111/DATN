@@ -240,6 +240,7 @@ public class ReviewServiceImpl implements ReviewService {
             dto.setComment(r.getComment());
             dto.setStatus(r.getStatus());
             dto.setUsername(r.getUser().getUsername());
+            dto.setAvatar(r.getUser().getAvatar());
             dto.setLocationName(r.getLocation().getName());
             dto.setImages(r.getImages().stream()
                     .map(ReviewImage::getImageUrl)
