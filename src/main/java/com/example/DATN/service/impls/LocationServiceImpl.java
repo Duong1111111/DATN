@@ -2,10 +2,7 @@ package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
-import com.example.DATN.entity.Account;
-import com.example.DATN.entity.Category;
-import com.example.DATN.entity.Location;
-import com.example.DATN.entity.LocationImage;
+import com.example.DATN.entity.*;
 import com.example.DATN.exception.BusinessException;
 import com.example.DATN.repository.*;
 import com.example.DATN.service.interfaces.LocationService;
@@ -40,6 +37,8 @@ public class LocationServiceImpl implements LocationService {
     private FavoriteRepository favoriteRepository;
     @Autowired
     private ImageUploadService imageUploadService;
+    @Autowired
+    private LocationViewLogRepository locationViewLogRepository;
     private final TimeAgoUtil timeAgoUtil;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
@@ -295,6 +294,17 @@ public class LocationServiceImpl implements LocationService {
     public LocationResponse getById(Integer locationId) {
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new RuntimeException("Location not found with id: " + locationId));
+        LocationViewLog log = new LocationViewLog();
+        log.setLocation(location);
+
+        String username = getCurrentUsername();
+        if (username != null) {
+            Account user = accountRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+            log.setUser(user);
+        }
+
+        locationViewLogRepository.save(log);
         return toResponse(location);
     }
     @Override

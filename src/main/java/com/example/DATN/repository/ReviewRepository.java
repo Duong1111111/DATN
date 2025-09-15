@@ -22,4 +22,14 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.location.locationId = :locationId")
     Double findAverageRatingByLocationId(@Param("locationId") Integer locationId);
     List<Review> findByLocation_LocationId(Integer locationId);
+
+    @Query(value = """
+        SELECT DATE_TRUNC(:period, created_at) as period, COUNT(*)
+        FROM Review
+        GROUP BY period
+        ORDER BY period
+        """, nativeQuery = true)
+    List<Object[]> countReviewGrowth(@Param("period") String period);
+
+    List<Review> findTop5ByLocation_LocationIdOrderByCreatedAtDesc(Integer locationId);
 }

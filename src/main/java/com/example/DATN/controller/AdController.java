@@ -2,10 +2,13 @@ package com.example.DATN.controller;
 
 import com.example.DATN.dto.request.AdRequest;
 import com.example.DATN.dto.response.AdResponse;
+import com.example.DATN.service.impls.AdActionLogService;
 import com.example.DATN.service.interfaces.AdService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
 import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +17,11 @@ import java.util.List;
 @RequestMapping("/api/ads")
 public class AdController {
     private final AdService adService;
+    private final AdActionLogService adActionLogService;
 
-    public AdController(AdService adService) {
+    public AdController(AdService adService, AdActionLogService adActionLogService) {
         this.adService = adService;
+        this.adActionLogService = adActionLogService;
     }
 
     @GetMapping
@@ -63,5 +68,20 @@ public class AdController {
     @GetMapping("/me")
     public ResponseEntity<List<AdResponse>> getMyAds() {
         return ResponseEntity.ok(adService.getMyAds());
+    }
+
+    @PostMapping("/{adId}/click")
+    public ResponseEntity<Void> logAdClick(@PathVariable Integer adId) {
+        String username = getCurrentUsername();
+        adActionLogService.logClick(adId, username);
+        return ResponseEntity.ok().build();
+    }
+
+    private String getCurrentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("No authenticated user found");
+        }
+        return auth.getName();
     }
 }

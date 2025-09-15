@@ -3,6 +3,7 @@ package com.example.DATN.controller;
 import com.example.DATN.dto.request.LocationRequest;
 import com.example.DATN.dto.response.LocationResponse;
 import com.example.DATN.entity.Location;
+import com.example.DATN.service.impls.DirectionRequestLogService;
 import com.example.DATN.service.interfaces.LocationService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
 import com.example.DATN.utils.enums.responsecode.SuccessCode;
@@ -10,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,11 +28,13 @@ import java.util.Map;
 @RequestMapping("/api/locations")
 public class LocationController {
     private final LocationService locationService;
+    private final DirectionRequestLogService directionRequestLogService;
     @Autowired
     private ObjectMapper objectMapper;
 
-    public LocationController(LocationService locationService) {
+    public LocationController(LocationService locationService, DirectionRequestLogService directionRequestLogService) {
         this.locationService = locationService;
+        this.directionRequestLogService = directionRequestLogService;
     }
 
     @GetMapping
@@ -126,5 +131,20 @@ public class LocationController {
         result.put("So sánh với tháng trước", locationService.compareWithPreviousMonth(locationId) +"%");
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/{locationId}/direction")
+    public ResponseEntity<Void> logDirectionRequest(@PathVariable Integer locationId) {
+        String username = getCurrentUsername();
+        directionRequestLogService.logDirectionRequest(locationId, username);
+        return ResponseEntity.ok().build();
+    }
+
+    private String getCurrentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("No authenticated user found");
+        }
+        return auth.getName();
     }
 }

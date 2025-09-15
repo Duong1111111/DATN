@@ -20,4 +20,13 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
             "WHERE l.createdBy.userId = :userId " +
             "AND l.id NOT IN (SELECT a.location.id FROM Ad a WHERE a.location IS NOT NULL)")
     List<Location> findLocationsNotAdvertised(@Param("userId") Integer userId);
+
+    @Query(value = """
+        SELECT DATE_TRUNC(:period, created_at) as period, COUNT(*)
+        FROM Location
+        GROUP BY period
+        ORDER BY period
+        """, nativeQuery = true)
+    List<Object[]> countLocationGrowth(@Param("period") String period);
+
 }

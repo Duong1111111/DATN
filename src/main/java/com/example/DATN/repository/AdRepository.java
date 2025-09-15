@@ -4,6 +4,7 @@ import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Ad;
 import com.example.DATN.utils.enums.options.AccountStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,4 +13,7 @@ import java.util.List;
 public interface AdRepository extends JpaRepository<Ad, Integer> {
     List<Ad> findAllByStatus(AccountStatus status);
     List<Ad> findByCreatedBy(Account account);
+
+    @Query("SELECT SUM(a.budget) FROM Ad a WHERE a.paymentStatus = 'SUCCESS'")
+    Double getTotalRevenue();
 }

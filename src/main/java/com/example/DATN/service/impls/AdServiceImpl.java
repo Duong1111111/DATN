@@ -25,6 +25,7 @@ public class AdServiceImpl implements AdService {
     @Autowired private AccountRepository accountRepo;
     @Autowired private LocationRepository locationRepo;
     @Autowired private CategoryRepository categoryRepository;
+    @Autowired private AdActionLogRepository adActionLogRepository;
     private final TimeAgoUtil timeAgoUtil;
     @Autowired
     private ReviewRepository reviewRepository;
@@ -35,7 +36,24 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public List<AdResponse> getAll() {
-        return adRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
+        List<Ad> ads = adRepo.findAll();
+
+        for (Ad ad : ads) {
+            AdActionLog log = new AdActionLog();
+            log.setAd(ad);
+            log.setActionType("IMPRESSION");
+
+            String username = getCurrentUsername();
+            Account user = null;
+            if (username != null) {
+                user = accountRepo.findByUsername(username)
+                        .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+            }
+
+            adActionLogRepository.save(log);
+        }
+
+        return ads.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -183,6 +201,7 @@ public class AdServiceImpl implements AdService {
         res.setUpdatedAt(ad.getUpdatedAt());
         res.setCreatedByUsername(ad.getCreatedBy().getUsername());
         res.setTitle(ad.getTitle());
+        res.setPaymentStatus(ad.getPaymentStatus());
         res.setActions(ad.getActions().stream().map(Enum::name).collect(Collectors.toList()));
         if (ad.getLocation() != null) {
             Location location = ad.getLocation();

@@ -1,6 +1,7 @@
 package com.example.DATN.exception;
 
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
+import com.example.DATN.utils.enums.responsecode.ErrorCode;
 import com.example.DATN.utils.enums.responsecode.ResponseCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,36 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<BaseResponse<?>> handleBusinessException(BusinessException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST; // mặc định
+
+        switch ((ErrorCode) ex.getErrorCode()) {
+            case USER_NOT_FOUND:
+            case ACCOUNT_NOT_FOUND:
+            case LOCATION_NOT_FOUND:
+                status = HttpStatus.NOT_FOUND; // 404
+                break;
+
+            case INVALID_CREDENTIALS:
+            case INVALID_TOKEN:
+            case EXPIRED_TOKEN:
+                status = HttpStatus.UNAUTHORIZED; // 401
+                break;
+
+            case ACCOUNT_NOT_ACTIVE:
+                status = HttpStatus.FORBIDDEN; // 403
+                break;
+
+            case USERNAME_ALREADY_EXISTS:
+                status = HttpStatus.CONFLICT; // 409
+                break;
+
+            default:
+                status = HttpStatus.BAD_REQUEST; // 400
+        }
+
         return ResponseEntity
-                .ok(BaseResponse.error(ex.getErrorCode())); // Trả về lỗi chuẩn
+                .status(status)
+                .body(BaseResponse.error(ex.getErrorCode()));
     }
 
     @ExceptionHandler(Exception.class)
