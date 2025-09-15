@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findAllByStatus(AccountStatus status);
+    List<Review> findByLocation_LocationIdAndStatus(Integer locationId, AccountStatus status);
     long countByLocation_LocationId(Integer locationId);
     long countByLocation_LocationIdAndCreatedAtBetween(
             Integer locationId,

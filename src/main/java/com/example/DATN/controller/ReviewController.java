@@ -71,4 +71,16 @@ public class ReviewController {
             @PathVariable Integer locationId) {
         return ResponseEntity.ok(reviewService.getReviewsByLocation(locationId));
     }
+    @GetMapping("/active")
+    public ResponseEntity<BaseResponse<List<ReviewResponse>>> getActiveReviews() {
+        List<ReviewResponse> reviews = reviewService.getAllActive();
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, reviews));
+    }
+
+    @GetMapping("/location/{locationId}/active")
+    public ResponseEntity<BaseResponse<List<ReviewResponse>>> getActiveReviewsByLocation(
+            @PathVariable Integer locationId) {
+        List<ReviewResponse> reviews = reviewService.getActiveByLocation(locationId);
+        return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, reviews));
+    }
 }

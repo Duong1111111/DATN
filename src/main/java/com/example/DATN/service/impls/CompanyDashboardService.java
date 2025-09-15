@@ -69,6 +69,7 @@ public class CompanyDashboardService {
         res.setComment(review.getComment());
         res.setStatus(review.getStatus());
         res.setUsername(review.getUser().getUsername());
+        res.setAvatar(review.getUser().getAvatar());
         res.setLocationName(review.getLocation().getName());
         res.setImages(
                 review.getImages().stream()

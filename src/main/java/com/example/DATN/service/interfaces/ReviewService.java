@@ -21,6 +21,10 @@ public interface ReviewService {
 
     ReviewResponse getById(Integer reviewId);
 
+    List<ReviewResponse> getAllActive();
+
+    List<ReviewResponse> getActiveByLocation(Integer locationId);
+
     Double getAverageRatingByLocationId(Integer locationId);
 
     List<ReviewResponse> getReviewsByLocation(Integer locationId);

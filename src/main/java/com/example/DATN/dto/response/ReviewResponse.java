@@ -15,6 +15,7 @@ public class ReviewResponse {
     private String comment;
     private AccountStatus status;
     private String username;
+    private String avatar;
     private String locationName;
     private List<String> images;
     private LocalDateTime createdAt;

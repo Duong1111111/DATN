@@ -45,6 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
             res.setComment(r.getComment());
             res.setStatus(r.getStatus());
             res.setUsername(r.getUser().getUsername());
+            res.setAvatar(r.getUser().getAvatar());
             res.setLocationName(r.getLocation().getName());
             res.setImages(
                     r.getImages().stream().map(ReviewImage::getImageUrl).toList()
@@ -180,6 +181,7 @@ public class ReviewServiceImpl implements ReviewService {
         res.setComment(r.getComment());
         res.setStatus(r.getStatus());
         res.setUsername(r.getUser().getUsername());
+        res.setAvatar(r.getUser().getAvatar());
         res.setLocationName(r.getLocation().getName());
         res.setImages(
                 r.getImages().stream().map(ReviewImage::getImageUrl).toList()
@@ -203,6 +205,22 @@ public class ReviewServiceImpl implements ReviewService {
                 .orElseThrow(() -> new RuntimeException("Review not found with id: " + reviewId));
 
         return toResponse(r);
+    }
+
+    @Override
+    public List<ReviewResponse> getAllActive() {
+        return reviewRepository.findAllByStatus(AccountStatus.ACTIVE)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReviewResponse> getActiveByLocation(Integer locationId) {
+        return reviewRepository.findByLocation_LocationIdAndStatus(locationId, AccountStatus.ACTIVE)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -239,6 +257,7 @@ public class ReviewServiceImpl implements ReviewService {
         res.setComment(review.getComment());
         res.setStatus(review.getStatus());
         res.setUsername(review.getUser().getUsername());
+        res.setAvatar(review.getUser().getAvatar());
         res.setLocationName(review.getLocation().getName());
         res.setImages(
                 review.getImages().stream()
