@@ -102,8 +102,8 @@ public class CompanyDashboardService {
     }
 
     // 2. Lấy các review mới nhất cho 1 địa điểm
-    public List<ReviewDashboardResponse> getLatestReviews(Integer locationId) {
-        return reviewRepository.findTop5ByLocation_LocationIdAndStatusOrderByCreatedAtDesc(locationId, AccountStatus.ACTIVE)
+    public List<ReviewDashboardResponse> getMonthlyReviews(Integer locationId, int year, int month) {
+        return reviewRepository.findReviewsByLocationAndMonth(locationId, AccountStatus.ACTIVE, year, month)
                 .stream()
                 .map(this::toDashboardResponse)
                 .collect(Collectors.toList());

@@ -9,10 +9,7 @@ import com.example.DATN.utils.enums.responsecode.SuccessCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -45,9 +42,13 @@ public class CompanyDashboardController {
         return ResponseEntity.ok(summary);
     }
 
-    @GetMapping("/reviews/{locationId}")
-    public ResponseEntity<List<ReviewDashboardResponse>> getLatestReviews(@PathVariable Integer locationId) {
-        return ResponseEntity.ok(companyDashboardService.getLatestReviews(locationId));
+    @GetMapping("/{locationId}/reviews/monthly")
+    public ResponseEntity<List<ReviewDashboardResponse>> getMonthlyReviews(
+            @PathVariable Integer locationId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(companyDashboardService.getMonthlyReviews(locationId, year, month));
     }
 
     @GetMapping("/ad-performance")

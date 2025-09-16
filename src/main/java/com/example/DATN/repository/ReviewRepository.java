@@ -38,4 +38,18 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findTop5ByLocation_LocationIdAndStatusOrderByCreatedAtDesc(Integer locationId, AccountStatus status);
 
     List<Review> findByParentReview_ReviewId(Integer parentReviewId);
+
+    @Query("SELECT r FROM Review r " +
+            "WHERE r.location.locationId = :locationId " +
+            "AND r.status = :status " +
+            "AND EXTRACT(YEAR FROM r.createdAt) = :year " +
+            "AND EXTRACT(MONTH FROM r.createdAt) = :month " +
+            "ORDER BY r.createdAt DESC")
+    List<Review> findReviewsByLocationAndMonth(
+            @Param("locationId") Integer locationId,
+            @Param("status") AccountStatus status,
+            @Param("year") int year,
+            @Param("month") int month
+    );
+
 }
