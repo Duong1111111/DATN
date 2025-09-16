@@ -1,6 +1,8 @@
 package com.example.DATN.service.interfaces;
 
+import com.example.DATN.dto.request.ReviewReplyRequest;
 import com.example.DATN.dto.request.ReviewRequest;
+import com.example.DATN.dto.response.ReviewReplyResponse;
 import com.example.DATN.dto.response.ReviewResponse;
 
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.List;
 public interface ReviewService {
     List<ReviewResponse> getAll();
     ReviewResponse create(ReviewRequest request);
+
+    ReviewReplyResponse replyToReview(ReviewReplyRequest request);
 
     ReviewResponse approveReview(Integer reviewId);
 

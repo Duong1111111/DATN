@@ -38,4 +38,11 @@ public class Review {
     @JsonBackReference
     private Location location;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_review_id")
+    private Review parentReview;
+
+    @OneToMany(mappedBy = "parentReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> replies = new ArrayList<>();
+
 }

@@ -90,6 +90,16 @@ public class CompanyDashboardService {
                 .collect(Collectors.toList());
     }
 
+    public Map<String, Object> getLocationSummary(Integer locationId) {
+        Long totalViews = locationViewLogRepository.countByLocation_LocationId(locationId);
+        Long totalFavorites = favoriteRepository.countByLocation_LocationId(locationId);
+        Long totalDirections = directionRequestLogRepository.countByLocation_LocationId(locationId);
+        return Map.of(
+                "totalViews", totalViews,
+                "totalFavorites", totalFavorites,
+                "totalDirections", totalDirections );
+    }
+
     // 2. Lấy các review mới nhất cho 1 địa điểm
     public List<ReviewResponse> getLatestReviews(Integer locationId) {
         return reviewRepository.findTop5ByLocation_LocationIdAndStatusOrderByCreatedAtDesc(locationId, AccountStatus.ACTIVE)

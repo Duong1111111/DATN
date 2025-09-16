@@ -1,6 +1,8 @@
 package com.example.DATN.service.impls;
 
+import com.example.DATN.dto.request.ReviewReplyRequest;
 import com.example.DATN.dto.request.ReviewRequest;
+import com.example.DATN.dto.response.ReviewReplyResponse;
 import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Location;
@@ -94,6 +96,45 @@ public class ReviewServiceImpl implements ReviewService {
 
         return toResponse(r);
     }
+
+    @Override
+    public ReviewReplyResponse replyToReview(ReviewReplyRequest request) {
+        Review parent = reviewRepository.findById(request.getParentReviewId())
+                .orElseThrow(() -> new RuntimeException("Parent review not found"));
+
+        Account user = accountRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Review reply = new Review();
+        reply.setUser(user);
+        reply.setLocation(parent.getLocation()); // reply vẫn thuộc location đó
+        reply.setComment(request.getComment());
+        reply.setStatus(AccountStatus.ACTIVE);   // reply thì thường active luôn
+        reply.setCreatedAt(LocalDateTime.now());
+        reply.setUpdatedAt(LocalDateTime.now());
+        reply.setParentReview(parent);
+        if (request.getImages() != null) {
+            for (MultipartFile file : request.getImages()) {
+                if (file != null && !file.isEmpty()) {
+                    try {
+                        String url = imageUploadService.uploadImage(file, "review_replies");
+                        ReviewImage ri = new ReviewImage();
+                        ri.setImageUrl(url);
+                        ri.setReview(reply);
+                        reply.getImages().add(ri);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Không thể upload ảnh: " + file.getOriginalFilename(), e);
+                    }
+                }
+            }
+        }
+
+        reply = reviewRepository.save(reply);
+        parent.getReplies().add(reply);
+
+        return toReplyResponse(reply);
+    }
+
     @Override
     public ReviewResponse approveReview(Integer reviewId) {
         Review review = reviewRepository.findById(reviewId)
@@ -250,6 +291,23 @@ public class ReviewServiceImpl implements ReviewService {
             return dto;
         }).toList();
     }
+
+    private ReviewReplyResponse toReplyResponse(Review review) {
+        ReviewReplyResponse res = new ReviewReplyResponse();
+        res.setReviewId(review.getReviewId());
+        res.setComment(review.getComment());
+        res.setUsername(review.getUser().getUsername());
+        res.setAvatar(review.getUser().getAvatar());
+        res.setImages(
+                review.getImages().stream()
+                        .map(ReviewImage::getImageUrl)
+                        .toList()
+        );
+        res.setCreatedAt(review.getCreatedAt());
+        res.setUpdatedAt(review.getUpdatedAt());
+        return res;
+    }
+
 
     private ReviewResponse toResponse(Review review) {
         ReviewResponse res = new ReviewResponse();

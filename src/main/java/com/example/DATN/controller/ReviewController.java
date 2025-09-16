@@ -1,6 +1,8 @@
 package com.example.DATN.controller;
 
+import com.example.DATN.dto.request.ReviewReplyRequest;
 import com.example.DATN.dto.request.ReviewRequest;
+import com.example.DATN.dto.response.ReviewReplyResponse;
 import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.service.interfaces.ReviewService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
@@ -82,5 +84,11 @@ public class ReviewController {
             @PathVariable Integer locationId) {
         List<ReviewResponse> reviews = reviewService.getActiveByLocation(locationId);
         return ResponseEntity.ok(BaseResponse.success(SuccessCode.SUCCESSFUL, reviews));
+    }
+
+    @PostMapping(value = "/reply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ReviewReplyResponse> replyToReview(
+            @ModelAttribute ReviewReplyRequest request) {
+        return ResponseEntity.ok(reviewService.replyToReview(request));
     }
 }

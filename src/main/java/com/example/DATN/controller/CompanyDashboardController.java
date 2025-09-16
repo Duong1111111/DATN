@@ -38,6 +38,12 @@ public class CompanyDashboardController {
                 )
         );}
 
+    @GetMapping("/{locationId}/summary")
+    public ResponseEntity<Map<String, Object>> getLocationSummary(@PathVariable Integer locationId) {
+        Map<String, Object> summary = companyDashboardService.getLocationSummary(locationId);
+        return ResponseEntity.ok(summary);
+    }
+
     @GetMapping("/reviews/{locationId}")
     public ResponseEntity<List<ReviewResponse>> getLatestReviews(@PathVariable Integer locationId) {
         return ResponseEntity.ok(companyDashboardService.getLatestReviews(locationId));
