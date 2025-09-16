@@ -1,6 +1,7 @@
 package com.example.DATN.controller;
 
 import com.example.DATN.dto.response.MonthlyLocationSummary;
+import com.example.DATN.dto.response.ReviewDashboardResponse;
 import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.service.impls.CompanyDashboardService;
 import com.example.DATN.utils.enums.responsecode.BaseResponse;
@@ -45,7 +46,7 @@ public class CompanyDashboardController {
     }
 
     @GetMapping("/reviews/{locationId}")
-    public ResponseEntity<List<ReviewResponse>> getLatestReviews(@PathVariable Integer locationId) {
+    public ResponseEntity<List<ReviewDashboardResponse>> getLatestReviews(@PathVariable Integer locationId) {
         return ResponseEntity.ok(companyDashboardService.getLatestReviews(locationId));
     }
 

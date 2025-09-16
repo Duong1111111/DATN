@@ -1,6 +1,7 @@
 package com.example.DATN.service.impls;
 
 import com.example.DATN.dto.response.MonthlyLocationSummary;
+import com.example.DATN.dto.response.ReviewDashboardResponse;
 import com.example.DATN.dto.response.ReviewResponse;
 import com.example.DATN.entity.Account;
 import com.example.DATN.entity.Ad;
@@ -101,15 +102,15 @@ public class CompanyDashboardService {
     }
 
     // 2. Lấy các review mới nhất cho 1 địa điểm
-    public List<ReviewResponse> getLatestReviews(Integer locationId) {
+    public List<ReviewDashboardResponse> getLatestReviews(Integer locationId) {
         return reviewRepository.findTop5ByLocation_LocationIdAndStatusOrderByCreatedAtDesc(locationId, AccountStatus.ACTIVE)
                 .stream()
-                .map(this::toResponse)
+                .map(this::toDashboardResponse)
                 .collect(Collectors.toList());
     }
 
-    private ReviewResponse toResponse(Review review) {
-        ReviewResponse res = new ReviewResponse();
+    private ReviewDashboardResponse toDashboardResponse(Review review) {
+        ReviewDashboardResponse res = new ReviewDashboardResponse();
         res.setReviewId(review.getReviewId());
         res.setRating(review.getRating());
         res.setComment(review.getComment());
@@ -124,6 +125,13 @@ public class CompanyDashboardService {
         );
         res.setCreatedAt(review.getCreatedAt());
         res.setUpdatedAt(review.getUpdatedAt());
+
+        // phân biệt cha / reply
+        res.setReply(review.getParentReview() != null);
+        res.setParentReviewId(
+                review.getParentReview() != null ? review.getParentReview().getReviewId() : null
+        );
+
         return res;
     }
 
