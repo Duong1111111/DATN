@@ -91,4 +91,10 @@ public class ReviewController {
             @ModelAttribute ReviewReplyRequest request) {
         return ResponseEntity.ok(reviewService.replyToReview(request));
     }
+    @GetMapping("/{reviewId}/replies")
+    public ResponseEntity<List<ReviewReplyResponse>> getReplies(
+            @PathVariable Integer reviewId) {
+        return ResponseEntity.ok(reviewService.getRepliesByParentId(reviewId));
+    }
+
 }

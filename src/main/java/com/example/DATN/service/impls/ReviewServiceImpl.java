@@ -136,6 +136,16 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public List<ReviewReplyResponse> getRepliesByParentId(Integer parentReviewId) {
+        List<Review> replies = reviewRepository.findByParentReview_ReviewId(parentReviewId);
+
+        return replies.stream()
+                .map(this::toReplyResponse)
+                .toList();
+    }
+
+
+    @Override
     public ReviewResponse approveReview(Integer reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review not found"));

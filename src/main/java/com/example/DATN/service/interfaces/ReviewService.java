@@ -13,6 +13,8 @@ public interface ReviewService {
 
     ReviewReplyResponse replyToReview(ReviewReplyRequest request);
 
+    List<ReviewReplyResponse> getRepliesByParentId(Integer parentReviewId);
+
     ReviewResponse approveReview(Integer reviewId);
 
     ReviewResponse rejectReview(Integer reviewId);

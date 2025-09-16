@@ -36,4 +36,6 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Object[]> countReviewGrowth(@Param("period") String period);
 
     List<Review> findTop5ByLocation_LocationIdAndStatusOrderByCreatedAtDesc(Integer locationId, AccountStatus status);
+
+    List<Review> findByParentReview_ReviewId(Integer parentReviewId);
 }
