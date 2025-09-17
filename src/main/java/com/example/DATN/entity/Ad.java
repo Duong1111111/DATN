@@ -59,4 +59,7 @@ public class Ad {
     @JoinColumn(name = "location_id")
     @JsonBackReference
     private Location location;
+
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AdActionLog> actionLogs = new ArrayList<>();
 }

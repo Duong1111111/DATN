@@ -63,4 +63,11 @@ public class Location {
     @JsonBackReference
     private List<Ad> ads = new ArrayList<>();
 
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LocationViewLog> viewLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DirectionRequestLog> directionRequestLogs = new ArrayList<>();
+
+
 }

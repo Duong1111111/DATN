@@ -42,7 +42,7 @@ public class Review {
     @JoinColumn(name = "parent_review_id")
     private Review parentReview;
 
-    @OneToMany(mappedBy = "parentReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentReview", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Review> replies = new ArrayList<>();
 
 }
