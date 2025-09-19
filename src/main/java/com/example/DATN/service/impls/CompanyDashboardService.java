@@ -141,13 +141,14 @@ public class CompanyDashboardService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Account currentUser = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Integer companyId = currentUser.getUserId();
 
         // Lấy danh sách quảng cáo của công ty
         List<Ad> ads = adActionLogRepository.findAdsByCompanyId(currentUser.getUserId());
 
         // Tính toán tổng impression / click
-        Long totalImpressions = adActionLogRepository.countByActionTypeAndAdIn("IMPRESSION", ads);
-        Long totalClicks = adActionLogRepository.countByActionTypeAndAdIn("CLICK", ads);
+        Long totalImpressions = adActionLogRepository.countByAd_CreatedBy_UserIdAndActionType(companyId, "IMPRESSION");
+        Long totalClicks = adActionLogRepository.countByAd_CreatedBy_UserIdAndActionType(companyId, "CLICK");
 
         return Map.of(
                 "totalImpressions", totalImpressions,

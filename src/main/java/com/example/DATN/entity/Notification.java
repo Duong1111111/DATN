@@ -19,6 +19,7 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private Type type;
     private String content;
+    private String title;
     private LocalDateTime createdAt;
     private boolean readStatus = false;
 

@@ -170,6 +170,23 @@ public class FavoriteServiceImpl implements FavoriteService {
             res.setUsername(user.getUsername());
             res.setLocationName(location.getName());
             res.setStatus(true); // Đã thêm yêu thích
+            res.setLocationId(location.getLocationId());
+            res.setAddress(location.getLocation());
+            if (location.getImages() != null && !location.getImages().isEmpty()) {
+                res.setImage(location.getImages().get(0).getImageUrl());
+            } else {
+                res.setImage(null);
+            }
+            if (location.getReviews() != null && !location.getReviews().isEmpty()) {
+                double avg = location.getReviews()
+                        .stream()
+                        .mapToDouble(Review::getRating)
+                        .average()
+                        .orElse(0.0);
+                res.setAverageRating(avg);
+            } else {
+                res.setAverageRating(0.0);
+            }
             res.setCreatedAt(fav.getCreatedAt());
             res.setUpdatedAt(fav.getUpdatedAt());
 

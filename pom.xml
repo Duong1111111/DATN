@@ -138,7 +138,13 @@
 			<artifactId>google-api-client-gson</artifactId>
 			<version>2.6.0</version>
 		</dependency>
-<!--		<dependency>-->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>31.1-jre</version>
+		</dependency>
+
+		<!--		<dependency>-->
 <!--			<groupId>com.google.cloud</groupId>-->
 <!--			<artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>-->
 <!--			<version>5.5.1</version>-->

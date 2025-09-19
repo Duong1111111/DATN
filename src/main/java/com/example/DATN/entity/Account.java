@@ -2,6 +2,7 @@ package com.example.DATN.entity;
 
 import com.example.DATN.utils.enums.options.AccountStatus;
 import com.example.DATN.utils.enums.options.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +39,7 @@ public class Account {
 
     // Quan hệ 1-1 với Company (nếu là công ty)
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonBackReference
     private Company company;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // trong Review -> Account user

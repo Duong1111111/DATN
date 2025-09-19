@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,7 @@ public interface LocationViewLogRepository extends JpaRepository<LocationViewLog
             "WHERE l.location.locationId = :locationId " +
             "GROUP BY EXTRACT(YEAR FROM l.viewTimestamp), EXTRACT(MONTH FROM l.viewTimestamp)")
     List<Object[]> countMonthlyViewsByLocation(@Param("locationId") Integer locationId);
+
+    @Query("SELECT COUNT(l) FROM LocationViewLog l WHERE l.location.createdBy.userId = :companyId AND l.viewTimestamp BETWEEN :start AND :end")
+    long countViewsByCompanyBetween(@Param("companyId") Integer companyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

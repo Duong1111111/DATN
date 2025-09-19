@@ -1,5 +1,6 @@
 package com.example.DATN.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +21,6 @@ public class Company {
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
+    @JsonManagedReference
     private Account account;
 }

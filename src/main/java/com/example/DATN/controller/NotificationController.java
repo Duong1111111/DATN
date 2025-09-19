@@ -59,6 +59,17 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getNotificationsForUser(userId));
     }
 
+    @GetMapping("/sent-by-admin")
+    public List<NotificationResponse> getNotificationsSentByAdmin(
+            @RequestParam Integer adminId) {
+        return notificationService.getNotificationsSentByAdmin(adminId);
+    }
+    @GetMapping("/for-staff-from-admin")
+    public List<NotificationResponse> getNotificationsForUserFromAdmin(
+            @RequestParam Integer userId) {
+        return notificationService.getNotificationsForUserFromAdmin(userId);
+    }
+
     // Lấy thông báo cho tất cả company mới đăng ký
     @GetMapping("/company-registered")
     public ResponseEntity<BaseResponse<List<NotificationResponse>>> getAllCompanyRegisteredNotifications() {

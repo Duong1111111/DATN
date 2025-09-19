@@ -10,6 +10,7 @@ import lombok.Setter;
 public class NotificationToRoleRequest {
     private Role targetRole;
     private Type type;
+    private String title;
     private String content;
 
     public void setTargetRole(String targetRole) {

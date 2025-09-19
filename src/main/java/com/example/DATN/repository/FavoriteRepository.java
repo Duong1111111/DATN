@@ -29,4 +29,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
             "GROUP BY EXTRACT(YEAR FROM f.createdAt), EXTRACT(MONTH FROM f.createdAt)")
     List<Object[]> countMonthlyFavoritesByLocation(@Param("locationId") Integer locationId);
 
+    @Query("SELECT COUNT(f) FROM Favorite f WHERE f.location.createdBy.userId = :companyId AND f.createdAt BETWEEN :start AND :end")
+    long countFavoritesByCompanyBetween(@Param("companyId") Integer companyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
 }

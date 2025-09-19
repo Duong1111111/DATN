@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class NotificationResponse {
     private Long id;
     private Type type;
+    private String title;
     private String content;
     private LocalDateTime createdAt;
     private Role targetRole;

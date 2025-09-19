@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/contact-info/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/api/upload/**").permitAll()
+                        .requestMatchers("/api/analyze-performance/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

@@ -65,6 +65,7 @@ public class NotificationService {
             Notification n = new Notification();
             n.setType(request.getType());
             n.setContent(request.getContent());
+            n.setTitle(request.getTitle());
             n.setSender(admin);
             n.setReceiver(receiver);
             n.setTargetRole(request.getTargetRole());
@@ -90,6 +91,7 @@ public class NotificationService {
                         n.getId(),
                         n.getType(),
                         n.getContent(),
+                        n.getTitle(),
                         n.getCreatedAt(),
                         n.getTargetRole(),
                         n.getSender().getUsername(),
@@ -97,6 +99,46 @@ public class NotificationService {
                 ))
                 .toList();
     }
+
+    public List<NotificationResponse> getNotificationsSentByAdmin(Integer adminId) {
+        Account admin = accountRepository.findById(adminId)
+                .filter(a -> a.getRole() == Role.ADMIN)
+                .orElseThrow(() -> new RuntimeException("Only admin can view their sent notifications"));
+
+        return notificationRepository.findBySender(admin).stream()
+                .map(n -> new NotificationResponse(
+                        n.getId(),
+                        n.getType(),
+                        n.getTitle(),
+                        n.getContent(),
+                        n.getCreatedAt(),
+                        n.getTargetRole(),
+                        n.getSender().getUsername(),
+                        n.getReceiver() != null ? n.getReceiver().getUsername() : null
+                ))
+                .toList();
+    }
+
+    public List<NotificationResponse> getNotificationsForUserFromAdmin(Integer userId) {
+        Account user = accountRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return notificationRepository.findByReceiver(user).stream()
+                .filter(n -> n.getSender() != null && n.getSender().getRole() == Role.ADMIN)
+                .map(n -> new NotificationResponse(
+                        n.getId(),
+                        n.getType(),
+                        n.getTitle(),
+                        n.getContent(),
+                        n.getCreatedAt(),
+                        n.getTargetRole(),
+                        n.getSender().getUsername(),
+                        n.getReceiver() != null ? n.getReceiver().getUsername() : null
+                ))
+                .toList();
+    }
+
+
 
     @Transactional
     public void markAsRead(Long notificationId, Integer receiverId) {

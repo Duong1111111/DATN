@@ -29,4 +29,7 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
         """, nativeQuery = true)
     List<Object[]> countLocationGrowth(@Param("period") String period);
 
+    @Query("SELECT DISTINCT l FROM Location l JOIN l.ads a WHERE l.createdBy.userId = :companyId")
+    List<Location> findLocationsWithAdsByUserId(@Param("companyId") Integer companyId);
+
 }

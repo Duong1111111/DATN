@@ -38,4 +38,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
         ORDER BY period
         """, nativeQuery = true)
     List<Object[]> countUserGrowth(@Param("period") String period);
+
+    Optional<Account> findByUserIdAndRole(Integer userId, Role role);
 }

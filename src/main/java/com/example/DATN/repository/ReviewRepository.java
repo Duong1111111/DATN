@@ -52,4 +52,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             @Param("month") int month
     );
 
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.location.createdBy.userId = :companyId AND r.createdAt BETWEEN :start AND :end")
+    long countReviewsByCompanyBetween(@Param("companyId") Integer companyId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
 }

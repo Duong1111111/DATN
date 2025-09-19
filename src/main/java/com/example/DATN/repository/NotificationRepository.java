@@ -17,4 +17,7 @@ import java.util.Optional;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     Optional<Notification> findByIdAndReceiver_UserId(Long id, Integer receiverId);
     List<Notification> findByTargetRole(Role targetRole);
+    List<Notification> findBySender(Account sender);
+    List<Notification> findByReceiver(Account receiver);
+
 }
