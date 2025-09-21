@@ -50,22 +50,25 @@ public class ImageUploadController {
                     .body(Map.of("message", "Lỗi khi upload ảnh: " + e.getMessage()));
         }
     }
-//    @PostMapping("/upload")
-//    public ResponseEntity<String> uploadFile(
-//            @RequestParam("file") MultipartFile file,
-//            @RequestParam(defaultValue = "documents") String folder) throws IOException {
-//        String url = imageUploadService.uploadImage(file, folder);
-//        return ResponseEntity.ok(url);
-//    }
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
-                                        @RequestParam("folder") String folder) {
+                                        @RequestParam("path") String path) {
         try {
-            String fileUrl = imageUploadService.uploadFile(file, folder);
-            return ResponseEntity.ok("File uploaded successfully: " + fileUrl);
+            String fileUrl = imageUploadService.uploadFile(file, path);
+            return ResponseEntity.ok(Map.of("message", "File uploaded successfully", "url", fileUrl));
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to store file: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/create-folder")
+    public ResponseEntity<?> createFolder(@RequestParam("path") String path) {
+        try {
+            imageUploadService.createFolder(path);
+            return ResponseEntity.ok("Folder created successfully: " + path);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to create folder: " + e.getMessage());
         }
     }
 
@@ -100,22 +103,67 @@ public class ImageUploadController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<String>> listFiles(@RequestParam String folder) {
-        List<String> files = imageUploadService.listFiles(folder);
-        return ResponseEntity.ok(files);
+    public ResponseEntity<?> listFiles(@RequestParam(defaultValue = "") String path) {
+        try {
+            List<Map<String, String>> items = imageUploadService.listFiles(path);
+            return ResponseEntity.ok(items);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to list files: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteFile(@RequestParam String filePath) {
+    public ResponseEntity<?> delete(@RequestParam String path,
+                                    @RequestParam(defaultValue = "false") boolean isFolder) {
         try {
-            boolean deleted = imageUploadService.deleteFile(filePath);
+            boolean deleted = imageUploadService.delete(path, isFolder);
             if (deleted) {
-                return ResponseEntity.ok("File deleted successfully: " + filePath);
+                return ResponseEntity.ok("Deleted successfully: " + path);
             } else {
-                return ResponseEntity.status(404).body("File not found: " + filePath);
+                return ResponseEntity.status(404).body("Not found: " + path);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Failed to delete file: " + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to delete: " + e.getMessage());
         }
     }
+
+    @PostMapping("/rename")
+    public ResponseEntity<?> rename(
+            @RequestParam String oldPath,
+            @RequestParam String newPath,
+            @RequestParam(defaultValue = "file") String type) {
+        try {
+            boolean renamed;
+            if ("folder".equalsIgnoreCase(type)) {
+                renamed = imageUploadService.renameFolder(oldPath, newPath);
+            } else {
+                renamed = imageUploadService.renameFile(oldPath, newPath);
+            }
+
+            if (renamed) {
+                return ResponseEntity.ok("Renamed successfully from " + oldPath + " to " + newPath);
+            } else {
+                return ResponseEntity.status(404).body("Not found: " + oldPath);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to rename: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/move-file")
+    public ResponseEntity<?> moveFile(
+            @RequestParam String sourcePath,
+            @RequestParam String targetFolder) {
+        try {
+            boolean moved = imageUploadService.moveFileToFolder(sourcePath, targetFolder);
+            if (moved) {
+                return ResponseEntity.ok(Map.of("message", "File moved successfully"));
+            } else {
+                return ResponseEntity.status(404).body(Map.of("error", "File not found"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

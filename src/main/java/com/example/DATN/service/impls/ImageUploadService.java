@@ -4,6 +4,7 @@ import com.google.api.gax.paging.Page;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +15,7 @@ import java.nio.file.StandardCopyOption;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ImageUploadService {
@@ -59,39 +58,85 @@ public class ImageUploadService {
         }
         return blob.getContent();
     }
-    public List<String> listFiles(String folderPath) {
-        List<String> fileNames = new ArrayList<>();
+
+    public List<Map<String, String>> listFiles(String folderPath) {
+        List<Map<String, String>> results = new ArrayList<>();
+        String prefix = folderPath.endsWith("/") ? folderPath : folderPath + "/";
+
+        // Đảm bảo chúng ta đang tìm trong thư mục gốc nếu path là "docs"
+        if (folderPath.equals("docs")) {
+            prefix = "docs/";
+        }
 
         Page<Blob> blobs = storage.list(
                 BUCKET_NAME,
-                Storage.BlobListOption.prefix(folderPath + "/")
+                Storage.BlobListOption.prefix(prefix),
+                Storage.BlobListOption.currentDirectory()
         );
 
         for (Blob blob : blobs.iterateAll()) {
-            fileNames.add(blob.getName());
-        }
+            String name = blob.getName();
+            if (name.equals(prefix)) {
+                continue;
+            }
 
-        return fileNames;
+            Map<String, String> item = new HashMap<>();
+
+            // *** BẮT ĐẦU SỬA LỖI ***
+            // Thêm dòng này để luôn trả về đường dẫn đầy đủ
+            item.put("path", name);
+            // *** KẾT THÚC SỬA LỖI ***
+
+            if (blob.isDirectory()) {
+                String dirName = name.substring(prefix.length(), name.length() - 1);
+                item.put("name", dirName);
+                item.put("type", "directory");
+            } else {
+                String fileName = name.substring(prefix.length());
+                item.put("name", fileName);
+                item.put("type", "file");
+            }
+            results.add(item);
+        }
+        return results;
     }
 
+
     public String uploadFile(MultipartFile file, String folderPath) throws IOException {
-        // ✅ Lấy tên file gốc
-        String originalFilename = file.getOriginalFilename();
+        // 1. Làm sạch tên file gốc
+        String originalFilename = StringUtils.cleanPath(file.getOriginalFilename());
+        if (originalFilename.isEmpty()) {
+            throw new IOException("Failed to store empty file.");
+        }
 
-        // ✅ Sinh tên file duy nhất (tránh trùng trên GCS)
+        // 2. Sinh tên file duy nhất
         String uniqueFilename = generateUniqueFilename(folderPath, originalFilename);
-        String fileName = folderPath + "/" + uniqueFilename;
 
-        // ✅ Tạo Blob và upload
-        BlobId blobId = BlobId.of(BUCKET_NAME, fileName);
+        // 3. Ghép đường dẫn an toàn, luôn dùng "/" cho GCS
+        String fullPath = Paths.get(folderPath, uniqueFilename)
+                .toString()
+                .replace("\\", "/");
+
+        // 4. Tạo Blob và upload
+        BlobId blobId = BlobId.of(BUCKET_NAME, fullPath);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(file.getContentType())
                 .build();
 
         storage.create(blobInfo, file.getBytes());
 
-        // ✅ Trả về URL public của file
-        return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, fileName);
+        // 5. Trả về URL public (nếu bucket public)
+        return String.format("https://storage.googleapis.com/%s/%s", BUCKET_NAME, fullPath);
+    }
+
+    public boolean createFolder(String folderPath) {
+        if (!folderPath.endsWith("/")) {
+            folderPath += "/";
+        }
+        BlobId blobId = BlobId.of(BUCKET_NAME, folderPath);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+        storage.create(blobInfo, new byte[0]);
+        return true;
     }
 
     private String generateUniqueFilename(String folder, String originalFilename) {
@@ -114,8 +159,119 @@ public class ImageUploadService {
         return blob != null && blob.exists();
     }
 
-    public boolean deleteFile(String filePath) {
-        BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
-        return storage.delete(blobId);
+    public boolean delete(String path, boolean isFolder) {
+        if (isFolder) {
+            // Xóa tất cả blob trong folder
+            Page<Blob> blobs = storage.list(
+                    BUCKET_NAME,
+                    Storage.BlobListOption.prefix(path.endsWith("/") ? path : path + "/")
+            );
+            boolean success = true;
+            for (Blob blob : blobs.iterateAll()) {
+                boolean deleted = storage.delete(blob.getBlobId());
+                if (!deleted) success = false;
+            }
+            return success;
+        } else {
+            BlobId blobId = BlobId.of(BUCKET_NAME, path);
+            return storage.delete(blobId);
+        }
     }
+
+    // ✅ Đổi tên file
+    public boolean renameFile(String oldPath, String newPath) {
+        BlobId oldBlobId = BlobId.of(BUCKET_NAME, oldPath);
+        Blob oldBlob = storage.get(oldBlobId);
+
+        if (oldBlob == null || !oldBlob.exists()) {
+            return false;
+        }
+
+        // Copy sang tên mới
+        BlobId newBlobId = BlobId.of(BUCKET_NAME, newPath);
+        Storage.CopyRequest copyRequest = Storage.CopyRequest.newBuilder()
+                .setSource(oldBlobId)
+                .setTarget(BlobInfo.newBuilder(newBlobId).setContentType(oldBlob.getContentType()).build())
+                .build();
+        storage.copy(copyRequest);
+
+        // Xóa file cũ
+        storage.delete(oldBlobId);
+        return true;
+    }
+
+    // ✅ Đổi tên folder
+    public boolean renameFolder(String oldFolderPath, String newFolderPath) {
+        if (!oldFolderPath.endsWith("/")) {
+            oldFolderPath += "/";
+        }
+        if (!newFolderPath.endsWith("/")) {
+            newFolderPath += "/";
+        }
+
+        Page<Blob> blobs = storage.list(
+                BUCKET_NAME,
+                Storage.BlobListOption.prefix(oldFolderPath)
+        );
+
+        boolean found = false;
+        for (Blob blob : blobs.iterateAll()) {
+            found = true;
+            String oldName = blob.getName();
+            String newName = oldName.replaceFirst(oldFolderPath, newFolderPath);
+
+            // Copy sang tên mới
+            BlobId newBlobId = BlobId.of(BUCKET_NAME, newName);
+            Storage.CopyRequest copyRequest = Storage.CopyRequest.newBuilder()
+                    .setSource(blob.getBlobId())
+                    .setTarget(BlobInfo.newBuilder(newBlobId).setContentType(blob.getContentType()).build())
+                    .build();
+            storage.copy(copyRequest);
+
+            // Xóa object cũ
+            storage.delete(blob.getBlobId());
+        }
+
+        return found;
+    }
+
+    // ✅ Di chuyển file sang folder mới
+    public boolean moveFileToFolder(String sourcePath, String targetFolderPath) {
+        // Làm sạch đường dẫn
+        String cleanSourcePath = StringUtils.cleanPath(sourcePath);
+        String cleanTargetFolder = StringUtils.cleanPath(targetFolderPath);
+
+        if (!cleanTargetFolder.endsWith("/")) {
+            cleanTargetFolder += "/";
+        }
+
+        // Lấy file gốc
+        BlobId sourceBlobId = BlobId.of(BUCKET_NAME, cleanSourcePath);
+        Blob sourceBlob = storage.get(sourceBlobId);
+
+        if (sourceBlob == null || !sourceBlob.exists()) {
+            return false;
+        }
+
+        // Tách tên file ra (chỉ lấy phần cuối cùng, bỏ folder cũ)
+        String filename = Paths.get(cleanSourcePath).getFileName().toString();
+
+        // Ghép path mới
+        String targetPath = cleanTargetFolder + filename;
+
+        BlobId targetBlobId = BlobId.of(BUCKET_NAME, targetPath);
+
+        // Copy sang folder mới
+        Storage.CopyRequest copyRequest = Storage.CopyRequest.newBuilder()
+                .setSource(sourceBlobId)
+                .setTarget(BlobInfo.newBuilder(targetBlobId).setContentType(sourceBlob.getContentType()).build())
+                .build();
+        storage.copy(copyRequest);
+
+        // Xóa file cũ
+        storage.delete(sourceBlobId);
+
+        return true;
+    }
+
 }
