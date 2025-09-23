@@ -214,6 +214,7 @@ public class LocationServiceImpl implements LocationService {
         List<Location> locations = locationRepository.findLocationsNotAdvertised(userId);
 
         return locations.stream()
+                .filter(location -> location.getStatus() == AccountStatus.ACTIVE)
                 .map(this::toResponse)
                 .toList();
     }
